@@ -1,6 +1,6 @@
 package com.excilys.formation.cdb.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Un ordinateur doit obligatoirement avoir au moins un nom. Si cela est
@@ -17,17 +17,19 @@ public class Computer {
     private Date discontinued;
     private long idCompany;
 
-    public Computer(String name) {
+    public Computer(long id, String name, Date introduced, Date discontinued, long idCompany) {
 	super();
-	this.name = name;
-    }
-
-    public Computer(String name, Date introduced, Date discontinued, long idCompany) {
-	super();
+	this.id = id;
 	this.name = name;
 	this.introduced = introduced;
 	this.discontinued = discontinued;
 	this.idCompany = idCompany;
+    }
+
+    public Computer(long id, String name) {
+	super();
+	this.id = id;
+	this.name = name;
     }
 
     public long getId() {
