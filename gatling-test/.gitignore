@@ -19,4 +19,6 @@ build.log
 
 # project files to ignore
 !/results/.gitkeep
-/.project
+.project
+.classpath
+.settings/*
