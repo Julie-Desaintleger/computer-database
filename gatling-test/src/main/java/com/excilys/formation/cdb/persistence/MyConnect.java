@@ -1,24 +1,50 @@
 package com.excilys.formation.cdb.persistence;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class MyConnect {
-    private static Connection connexion;
+    private static Connection connection;
     private static boolean driverImported = false;
+    private static String driverName;
+    private static String url;
+    private static String username;
+    private static String password;
 
-    private static final String driverName = "com.mysql.cj.jdbc.Driver";
-    private static final String databaseName = "computer-database-db";
-    private static final String url = "jdbc:mysql://localhost:3306/" + databaseName + "?serverTimezone=UTC";
+    public static void initVar() {
+	try (InputStream input = MyConnect.class.getClassLoader().getResourceAsStream("config.properties")) {
 
-    private static final String username = "admincdb";
-    private static final String password = "qwerty1234";
+	    Properties properties = new Properties();
+
+	    if (input == null) {
+		System.err.println("Désolé... impossible de trouver le fichier config.properties");
+		return;
+	    }
+
+	    // load a properties file from class path, inside static method
+	    properties.load(input);
+
+	    // get the property value
+	    driverName = properties.getProperty("driver");
+	    url = properties.getProperty("db.url");
+
+	    username = properties.getProperty("db.user");
+	    password = properties.getProperty("db.password");
+
+	} catch (IOException ex) {
+	    ex.printStackTrace();
+	}
+    }
 
     public MyConnect() {
     }
 
     private static void init() {
+	initVar();
 	try {
 	    Class.forName(driverName).newInstance();
 	    driverImported = true;
@@ -33,9 +59,9 @@ public class MyConnect {
 	if (!driverImported)
 	    init();
 	try {
-	    if (connexion == null || connexion.isClosed())
-		connexion = DriverManager.getConnection(url, username, password);
-	    return connexion;
+	    if (connection == null || connection.isClosed())
+		connection = DriverManager.getConnection(url, username, password);
+	    return connection;
 	} catch (SQLException e) {
 	    e.getMessage();
 	    e.printStackTrace();
@@ -44,4 +70,5 @@ public class MyConnect {
 	}
 	return null;
     }
+
 }
