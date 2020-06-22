@@ -30,7 +30,7 @@ public class Company {
 
     @Override
     public String toString() {
-	return "Company [id=" + id + ", name=" + name + "]";
+	return "Company\t|\tid = " + id + "\t|\tname = " + name;
     }
 
 }
