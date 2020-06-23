@@ -166,6 +166,18 @@ public class Cli {
     }
 
     /**
+     * Suppression d'un ordinateur
+     */
+    public static void deleteComputer() {
+	Long idComputer = getId();
+
+	if (checkId(idComputer)) {
+	    computerService.delete(idComputer);
+	    System.out.println("L'ordinateur a bien été supprimé");
+	}
+    }
+
+    /**
      * Affiche les commandes possibles pour le client
      */
     public static void cmd() {
@@ -222,6 +234,10 @@ public class Cli {
 	    case ("upd"):
 		System.out.println("Mise à jour de l'ordinateur :");
 		updateComputer();
+		break;
+	    case ("del"):
+		System.out.println("Suppression de l'ordinateur :");
+		deleteComputer();
 		break;
 	    case ("help"):
 		cmd();

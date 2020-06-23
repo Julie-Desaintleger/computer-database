@@ -20,6 +20,7 @@ public class ComputerDAO {
     private static final String SELECT_BY_ID = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
+    private static final String DELETE = "DELETE FROM computer where id = ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -149,6 +150,21 @@ public class ComputerDAO {
 	    } catch (SQLException e) {
 		System.err.println("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    }
+	}
+    }
+
+    /**
+     * Suppression d'un ordinateur
+     * 
+     * @param id l'identifiant de l'ordinateur à supprimer en base
+     */
+    public void delete(Long id) {
+	try {
+	    PreparedStatement statement = connect.prepareStatement(DELETE);
+	    statement.setLong(1, id);
+	    statement.execute();
+	} catch (SQLException e) {
+	    System.err.println("Erreur DAO -> suppression ordinateur" + e.getMessage());
 	}
     }
 }

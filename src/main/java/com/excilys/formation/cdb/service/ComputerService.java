@@ -35,4 +35,8 @@ public class ComputerService {
     public void update(Computer computer) {
 	computerDAO.update(computer);
     }
+
+    public void delete(Long id) {
+	computerDAO.delete(id);
+    }
 }
