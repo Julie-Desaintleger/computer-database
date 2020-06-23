@@ -145,15 +145,23 @@ public class Cli {
     /**
      * Affiche les commandes possibles pour le client
      */
-    public static void start() {
+    public static void cmd() {
 	System.out.println("Entrez votre commande : ");
-	System.out.println("0 - Liste des entreprises");
-	System.out.println("1 - Liste des ordinateurs");
-	System.out.println("2 - Détails d'un ordinateur");
-	System.out.println("3 - Création d'un ordinateur");
-	System.out.println("4 - Mise à jour d'un ordinateur");
-	System.out.println("5 - Suppression d'un ordinateur");
-	System.out.println("6 - Quitter");
+	System.out.println("list - Liste des entreprises");
+	System.out.println("listc - Liste des ordinateurs");
+	System.out.println("computer - Détails d'un ordinateur");
+	System.out.println("new - Création d'un ordinateur");
+	System.out.println("upd - Mise à jour d'un ordinateur");
+	System.out.println("del - Suppression d'un ordinateur");
+	System.out.println("help - Pour afficher les commandes");
+	System.out.println("q - Quitter");
+    }
+
+    /**
+     * Démarre le service CLI
+     */
+    public static void start() {
+	cmd();
 
 	companyService = CompanyService.getInstance();
 	computerService = ComputerService.getInstance();
@@ -172,23 +180,26 @@ public class Cli {
 	while (isContinue) {
 	    answer = sc.nextLine();
 	    switch (answer) {
-	    case ("0"):
+	    case ("list"):
 		System.out.println("Liste des entreprises :");
 		listAllCompanies();
 		break;
-	    case ("1"):
+	    case ("listc"):
 		System.out.println("Liste des ordinateurs :");
 		listAllComputers();
 		break;
-	    case ("2"):
+	    case ("computer"):
 		System.out.println("Détail de l'ordinateur :");
 		detailsComputer();
 		break;
-	    case ("3"):
+	    case ("new"):
 		System.out.println("Création de l'ordinateur :");
 		createComputer();
 		break;
-	    case ("6"):
+	    case ("help"):
+		cmd();
+		break;
+	    case ("q"):
 		System.out.println("Merci. Au revoir !");
 		isContinue = false; // TO DO close connexion
 		break;
