@@ -31,4 +31,8 @@ public class ComputerService {
     public void insert(Computer computer) {
 	computerDAO.create(computer);
     }
+
+    public void update(Computer computer) {
+	computerDAO.update(computer);
+    }
 }

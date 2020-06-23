@@ -19,6 +19,7 @@ public class ComputerDAO {
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String SELECT_BY_ID = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -121,6 +122,32 @@ public class ComputerDAO {
 	    } catch (SQLException e) {
 		System.err.println(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
+	    }
+	}
+    }
+
+    /**
+     * Mise à jour d'un ordinateur
+     * 
+     * @param computer l'ordinateur à mettre à jour en base
+     */
+    public void update(Computer computer) {
+	if (computer != null) {
+	    try {
+		PreparedStatement statement = connect.prepareStatement(UPDATE);
+		statement.setString(1, computer.getName());
+
+		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
+		statement.setDate(2, introducedDate);
+
+		Date discontinuedDate = computer.getDiscontinued() == null ? null : computer.getDiscontinued();
+		statement.setDate(3, discontinuedDate);
+
+		statement.setLong(4, computer.getIdCompany());
+		statement.setLong(5, computer.getId());
+		statement.execute();
+	    } catch (SQLException e) {
+		System.err.println("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    }
 	}
     }

@@ -151,6 +151,21 @@ public class Cli {
     }
 
     /**
+     * Mise à jour d'un ordinateur
+     */
+    public static void updateComputer() {
+	Long idComp = getId();
+
+	if (checkId(idComp)) {
+	    Computer newComp = getInfos();
+	    if (newComp != null) {
+		newComp.setId(idComp);
+		computerService.update(newComp);
+	    }
+	}
+    }
+
+    /**
      * Affiche les commandes possibles pour le client
      */
     public static void cmd() {
@@ -203,6 +218,10 @@ public class Cli {
 	    case ("new"):
 		System.out.println("Création de l'ordinateur :");
 		createComputer();
+		break;
+	    case ("upd"):
+		System.out.println("Mise à jour de l'ordinateur :");
+		updateComputer();
 		break;
 	    case ("help"):
 		cmd();
