@@ -1,5 +1,6 @@
 package com.excilys.formation.cdb.ui;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -96,6 +97,51 @@ public class Cli {
 	return isPresent;
     }
 
+    public static void createComputer() {
+	Computer newComputer = getInfos();
+	if (newComputer != null) {
+	    computerService.insert(newComputer);
+	}
+    }
+
+    private static Computer getInfos() {
+	Date dateContinued = null;
+	Date dateDisccontinued = null;
+	Long idComputer = null;
+	Computer newComputer = null;
+	String answer;
+
+	System.out.println("Entrez un nom pour l'ordinateur : ");
+	String name = sc.nextLine();
+	if (name.isEmpty()) {
+	    System.err.print("Le nom ne peut pas être vide");
+	} else {
+	    try {
+		System.out.println("Entrez la date d'introduction au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
+		answer = sc.nextLine();
+		if (answer.length() > 0) {
+		    dateContinued = Date.valueOf(answer);
+		}
+		System.out.println("Entrez la date Discontinued au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
+		answer = sc.nextLine();
+		if (answer.length() > 0) {
+		    dateDisccontinued = Date.valueOf(answer);
+		}
+		System.out.println("Entrez l'ID de la compagnie (<Entrer> pour ignorer) : ");
+		answer = sc.nextLine();
+		if (answer.length() > 0) {
+		    idComputer = Long.parseLong(answer);
+
+		}
+		newComputer = new Computer(name, dateContinued, dateDisccontinued, idComputer);
+		System.out.println("Nouvel ordinateur : " + newComputer.toString());
+	    } catch (Exception e) {
+		System.err.println("Erreur de format " + e.getMessage());
+	    }
+	}
+	return newComputer;
+    }
+
     /**
      * Affiche les commandes possibles pour le client
      */
@@ -137,6 +183,10 @@ public class Cli {
 	    case ("2"):
 		System.out.println("Détail de l'ordinateur :");
 		detailsComputer();
+		break;
+	    case ("3"):
+		System.out.println("Création de l'ordinateur :");
+		createComputer();
 		break;
 	    case ("6"):
 		System.out.println("Merci. Au revoir !");

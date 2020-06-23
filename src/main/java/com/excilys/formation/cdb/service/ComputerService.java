@@ -27,4 +27,8 @@ public class ComputerService {
     public Computer getById(Long id) {
 	return computerDAO.findById(id);
     }
+
+    public void insert(Computer computer) {
+	computerDAO.create(computer);
+    }
 }

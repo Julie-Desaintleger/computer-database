@@ -1,6 +1,7 @@
 package com.excilys.formation.cdb.persistence;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ public class ComputerDAO {
     private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String SELECT_BY_ID = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE computer.id = ?";
+    private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -95,5 +97,31 @@ public class ComputerDAO {
 	    }
 	}
 	return computer;
+    }
+
+    /**
+     * Création d'un nouvel ordinateur
+     * 
+     * @param computer l'ordinateur à insérer en base
+     */
+    public void create(Computer computer) {
+	if (computer != null) {
+	    try {
+		PreparedStatement statement = connect.prepareStatement(INSERT);
+		statement.setString(1, computer.getName());
+		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
+		statement.setDate(2, introducedDate);
+		Date discontinuedDate = computer.getDiscontinued() == null ? null : computer.getDiscontinued();
+		statement.setDate(3, discontinuedDate);
+		Long idCompany = computer.getIdCompany();
+		if (idCompany != null) {
+		    statement.setLong(4, idCompany);
+		}
+		statement.execute();
+	    } catch (SQLException e) {
+		System.err.println(
+			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
+	    }
+	}
     }
 }

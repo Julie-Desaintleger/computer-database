@@ -26,6 +26,14 @@ public class Computer {
 	this.idCompany = idCompany;
     }
 
+    public Computer(String name, Date introduced, Date discontinued, long idCompany) {
+	super();
+	this.name = name;
+	this.introduced = introduced;
+	this.discontinued = discontinued;
+	this.idCompany = idCompany;
+    }
+
     public Computer(long id, String name) {
 	super();
 	this.id = id;
