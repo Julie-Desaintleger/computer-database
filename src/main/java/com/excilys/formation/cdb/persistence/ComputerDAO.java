@@ -16,6 +16,7 @@ public class ComputerDAO {
 
     private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
+    private static final String SELECT_BY_ID = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE computer.id = ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -46,7 +47,7 @@ public class ComputerDAO {
 		computerList.add(computer);
 	    }
 	} catch (SQLException e) {
-	    System.err.println("Erreur DAO -> Lister tous les ordinateurs");
+	    System.err.println("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
 	}
 	return computerList;
     }
@@ -71,5 +72,28 @@ public class ComputerDAO {
 	    System.err.println("Erreur DAO -> Compter tous les ordinateurs");
 	}
 	return result;
+    }
+
+    /**
+     * Recherche un ordinateur par un identifiant
+     * 
+     * @param id l'identifiant à chercher en base
+     * @return L'ordinateur correspondant si l'identifiant est présent, sinon null.
+     */
+    public Computer findById(Long id) {
+	Computer computer = null;
+	if (id != null) {
+	    try {
+		PreparedStatement statement = connect.prepareStatement(SELECT_BY_ID);
+		statement.setLong(1, id);
+		ResultSet resultSet = statement.executeQuery();
+		while (resultSet.next()) {
+		    computer = ComputerMapper.map(resultSet);
+		}
+	    } catch (SQLException e) {
+		System.err.println("Erreur DAO -> Ordinateur par id : " + e.getMessage());
+	    }
+	}
+	return computer;
     }
 }

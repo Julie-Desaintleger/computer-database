@@ -23,4 +23,8 @@ public class ComputerService {
     public int countAll() {
 	return computerDAO.countAll();
     }
+
+    public Computer getById(Long id) {
+	return computerDAO.findById(id);
+    }
 }
