@@ -91,6 +91,7 @@ public class ComputerDAO {
 		PreparedStatement statement = connect.prepareStatement(SELECT_BY_ID);
 		statement.setLong(1, id);
 		ResultSet resultSet = statement.executeQuery();
+
 		while (resultSet.next()) {
 		    computer = ComputerMapper.map(resultSet);
 		}
@@ -137,13 +138,10 @@ public class ComputerDAO {
 	    try {
 		PreparedStatement statement = connect.prepareStatement(UPDATE);
 		statement.setString(1, computer.getName());
-
 		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
 		statement.setDate(2, introducedDate);
-
 		Date discontinuedDate = computer.getDiscontinued() == null ? null : computer.getDiscontinued();
 		statement.setDate(3, discontinuedDate);
-
 		statement.setLong(4, computer.getIdCompany());
 		statement.setLong(5, computer.getId());
 		statement.execute();

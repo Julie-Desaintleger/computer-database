@@ -45,6 +45,7 @@ public class Cli {
      */
     public static void detailsComputer() {
 	Long idComputer = getId();
+
 	if (idComputer != null) {
 	    checkId(idComputer);
 	} else {
@@ -62,8 +63,10 @@ public class Cli {
 	String reply;
 	Long idComputer = null;
 	boolean isCorrectId = false;
+
 	while (!isCorrectId) {
 	    reply = sc.nextLine();
+
 	    try {
 		idComputer = Long.parseLong(reply);
 		isCorrectId = true;
@@ -83,8 +86,10 @@ public class Cli {
      */
     private static boolean checkId(Long idComputer) {
 	boolean isPresent = false;
+
 	if (idComputer != null) {
 	    Computer c = computerService.getById(idComputer);
+
 	    if (c != null) {
 		isPresent = true;
 		System.out.println("L'id correspond à l'ordinateur suivant : \n" + c.toString());
@@ -102,6 +107,7 @@ public class Cli {
      */
     public static void createComputer() {
 	Computer newComputer = getInfos();
+
 	if (newComputer != null) {
 	    computerService.insert(newComputer);
 	}
@@ -114,7 +120,7 @@ public class Cli {
      */
     private static Computer getInfos() {
 	Date dateContinued = null;
-	Date dateDisccontinued = null;
+	Date dateDiscontinued = null;
 	Long idComputer = null;
 	Computer newComputer = null;
 	String answer;
@@ -124,6 +130,7 @@ public class Cli {
 	if (name.isEmpty()) {
 	    System.err.print("Le nom ne peut pas être vide");
 	} else {
+
 	    try {
 		System.out.println("Entrez la date d'introduction au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
@@ -133,7 +140,7 @@ public class Cli {
 		System.out.println("Entrez la date Discontinued au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
 		if (answer.length() > 0) {
-		    dateDisccontinued = Date.valueOf(answer);
+		    dateDiscontinued = Date.valueOf(answer);
 		}
 		System.out.println("Entrez l'ID de la compagnie (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
@@ -141,7 +148,7 @@ public class Cli {
 		    idComputer = Long.parseLong(answer);
 
 		}
-		newComputer = new Computer(name, dateContinued, dateDisccontinued, idComputer);
+		newComputer = new Computer(name, dateContinued, dateDiscontinued, idComputer);
 		System.out.println("Nouvel ordinateur : " + newComputer.toString());
 	    } catch (Exception e) {
 		System.err.println("Erreur de format " + e.getMessage());
@@ -154,13 +161,13 @@ public class Cli {
      * Mise à jour d'un ordinateur
      */
     public static void updateComputer() {
-	Long idComp = getId();
+	Long idComputer = getId();
 
-	if (checkId(idComp)) {
-	    Computer newComp = getInfos();
-	    if (newComp != null) {
-		newComp.setId(idComp);
-		computerService.update(newComp);
+	if (checkId(idComputer)) {
+	    Computer newComputer = getInfos();
+	    if (newComputer != null) {
+		newComputer.setId(idComputer);
+		computerService.update(newComputer);
 	    }
 	}
     }
