@@ -97,6 +97,9 @@ public class Cli {
 	return isPresent;
     }
 
+    /**
+     * Création d'un nouvel ordinateur
+     */
     public static void createComputer() {
 	Computer newComputer = getInfos();
 	if (newComputer != null) {
@@ -104,6 +107,11 @@ public class Cli {
 	}
     }
 
+    /**
+     * Récupérer les informations sur un ordinateur
+     * 
+     * @return les informations sur l'ordinateur
+     */
     private static Computer getInfos() {
 	Date dateContinued = null;
 	Date dateDisccontinued = null;
@@ -208,7 +216,6 @@ public class Cli {
 		System.out.println("Recommencez... je n'ai pas compris");
 		break;
 	    }
-
 	}
     }
 
