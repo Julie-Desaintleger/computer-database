@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
+import com.excilys.formation.cdb.service.ComputerService;
 
 public class Cli {
     private static Scanner sc;
     private static CompanyService companyService;
+    private static ComputerService computerService;
 
     /**
      * Liste toutes les entreprises dans la base
@@ -19,6 +22,16 @@ public class Cli {
 	while (!isCompleted) {
 	    List<Company> allCompanies = companyService.getAll();
 	    allCompanies.forEach(cp -> System.out.println(cp.toString()));
+	    isCompleted = true;
+	}
+    }
+
+    public static void listAllComputers() {
+	boolean isCompleted = false;
+
+	while (!isCompleted) {
+	    List<Computer> allComputers = computerService.getAll();
+	    allComputers.forEach(cm -> System.out.println(cm.toString()));
 	    isCompleted = true;
 	}
     }
@@ -37,7 +50,7 @@ public class Cli {
 	System.out.println("6 - Quitter");
 
 	companyService = CompanyService.getInstance();
-	// a venir computerService = ComputerService.getInstance();
+	computerService = ComputerService.getInstance();
 
 	select_option();
     }
@@ -56,6 +69,10 @@ public class Cli {
 	    case ("0"):
 		System.out.println("Liste des entreprises :");
 		listAllCompanies();
+		break;
+	    case ("1"):
+		System.out.println("Liste des ordinateurs :");
+		listAllComputers();
 		break;
 	    case ("6"):
 		System.out.println("Merci. Au revoir !");
