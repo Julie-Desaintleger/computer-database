@@ -9,7 +9,7 @@ public class CompanyMapper {
     private static Company newCompany;
 
     /**
-     * S'occupe de la convertion du résultat en entité
+     * S'occupe de la conversion du résultat en entité
      * 
      * @param resultSet résultat de la requête
      * @return une entité Company correspondante
