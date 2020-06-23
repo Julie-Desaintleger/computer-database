@@ -56,7 +56,7 @@ public class Cli {
      * 
      * @return l'identifiant de l'ordinateur
      */
-    public static Long getId() {
+    private static Long getId() {
 	System.out.println("Entrez un identifiant d'ordinateur : ");
 	String reply;
 	Long idComputer = null;
@@ -80,7 +80,7 @@ public class Cli {
      * @param idComputer l'identifiant d'ordinateur à chercher
      * @return true si l'identifiant existe, sinon false.
      */
-    public static boolean checkId(Long idComputer) {
+    private static boolean checkId(Long idComputer) {
 	boolean isPresent = false;
 	if (idComputer != null) {
 	    Computer c = computerService.getById(idComputer);
