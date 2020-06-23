@@ -40,6 +40,7 @@ public class CompanyDAO {
 	try {
 	    PreparedStatement statement = connect.prepareStatement(SELECT_ALL);
 	    ResultSet resultSet = statement.executeQuery();
+
 	    while (resultSet.next()) {
 		Company company = CompanyMapper.map(resultSet);
 		companyList.add(company);
@@ -63,7 +64,7 @@ public class CompanyDAO {
 	    ResultSet resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
-		result = resultSet.getInt("total");
+		result = resultSet.getInt("nb_company");
 	    }
 	    System.out.println("Nombre total d'entrées dans la base : " + result);
 
