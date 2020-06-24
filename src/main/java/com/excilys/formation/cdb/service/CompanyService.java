@@ -3,6 +3,7 @@ package com.excilys.formation.cdb.service;
 import java.util.List;
 
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.CompanyDAO;
 
 public class CompanyService {
@@ -22,5 +23,9 @@ public class CompanyService {
 
     public int countAll() {
 	return companyDAO.countAll();
+    }
+
+    public List<Company> getAllByPage(Page page) {
+	return companyDAO.getByPage(page);
     }
 }

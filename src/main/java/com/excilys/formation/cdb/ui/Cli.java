@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
@@ -19,11 +20,13 @@ public class Cli {
      */
     public static void listAllCompanies() {
 	boolean isCompleted = false;
+	Page newPage = new Page();
+	int nbCompanies = companyService.countAll();
 
 	while (!isCompleted) {
-	    List<Company> allCompanies = companyService.getAll();
+	    List<Company> allCompanies = companyService.getAllByPage(newPage);
 	    allCompanies.forEach(cp -> System.out.println(cp.toString()));
-	    isCompleted = true;
+	    isCompleted = optionsPages(newPage, nbCompanies);
 	}
     }
 
@@ -32,11 +35,13 @@ public class Cli {
      */
     public static void listAllComputers() {
 	boolean isCompleted = false;
+	Page newPage = new Page();
+	int nbComputer = computerService.countAll();
 
 	while (!isCompleted) {
-	    List<Computer> allComputers = computerService.getAll();
+	    List<Computer> allComputers = computerService.getAllByPage(newPage);
 	    allComputers.forEach(cm -> System.out.println(cm.toString()));
-	    isCompleted = true;
+	    isCompleted = optionsPages(newPage, nbComputer);
 	}
     }
 
@@ -181,6 +186,59 @@ public class Cli {
 	if (checkId(idComputer)) {
 	    computerService.delete(idComputer);
 	    System.out.println("L'ordinateur a bien été supprimé");
+	}
+    }
+
+    /**
+     * Pagination de l'affichage
+     * 
+     * @param newPage
+     * @param nbTotal
+     * @return true quand on arrête l'affichage par page, sinon false.
+     */
+    public static boolean optionsPages(Page newPage, int nbTotal) {
+	boolean stop = false;
+	System.out.println("Page " + newPage.getCurrentPage() + "/" + newPage.getTotalPages(nbTotal));
+	System.out.println("Entrez 'p' pour Précédent - " + "'s' pour Suivant -" + " 'page [numero page]' "
+		+ "et 'q' pour quitter");
+
+	String input = sc.nextLine();
+
+	switch (input) {
+	case ("p"):
+	    newPage.getPreviousPage();
+	    return stop;
+	case ("s"):
+	    newPage.getNextPage(nbTotal);
+	    return stop;
+	case ("q"):
+	    return stop = true;
+	default:
+	    if (input.toLowerCase().startsWith("page ")) {
+		String num = input.split(" ")[1];
+		parsePage(newPage, stop, num);
+	    } else {
+		System.out.println("Commande inconnue.");
+		return stop;
+	    }
+	}
+	return stop;
+    }
+
+    private static void parsePage(Page newPage, boolean stop, String num) {
+	int idPage;
+	try {
+	    idPage = Integer.parseInt(num);
+	    System.out.println("Vous avez demandé la page : " + idPage);
+	    if (idPage > 0 && idPage <= newPage.getTotalPage()) {
+		newPage.setCurrentPage(idPage);
+		newPage.calculFirstLine();
+	    } else {
+		System.out.println("Cette page n'existe pas");
+		return;
+	    }
+	} catch (NumberFormatException e) {
+	    System.err.println("Vous n'avez pas tapé un id de page valide");
 	}
     }
 

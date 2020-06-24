@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.mapper.CompanyMapper;
 
 public class CompanyDAO {
@@ -16,6 +17,7 @@ public class CompanyDAO {
 
     private static final String SELECT_ALL = "SELECT id, name FROM company ORDER BY id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_company FROM company";
+    private static final String SELECT_WITH_PAGE = "SELECT id, name FROM company ORDER BY id LIMIT ? OFFSET ?";
 
     /**
      * L'instance du singleton de CompanyDAO.
@@ -72,5 +74,32 @@ public class CompanyDAO {
 	    System.err.println("Erreur DAO -> Compter toutes les compagnies");
 	}
 	return result;
+    }
+
+    /**
+     * Liste toutes les compagnies dans une page spécifique
+     * 
+     * @param p les informations qui doivent être contenues dans la page p
+     * @return la liste de compagnies
+     */
+    public List<Company> getByPage(Page p) {
+	List<Company> companies = new ArrayList<Company>();
+
+	try {
+	    PreparedStatement statement = connect.prepareStatement(SELECT_WITH_PAGE);
+
+	    statement.setInt(1, p.getRows());
+	    statement.setInt(2, p.getFirstLine());
+
+	    ResultSet resultSet = statement.executeQuery();
+	    while (resultSet.next()) {
+		Company company = CompanyMapper.map(resultSet);
+		companies.add(company);
+	    }
+	} catch (SQLException e) {
+	    System.err
+		    .println("Erreur DAO -> liste des compagnies de la page : " + p.getCurrentPage() + e.getMessage());
+	}
+	return companies;
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
 
 public class ComputerDAO {
@@ -21,6 +22,7 @@ public class ComputerDAO {
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM computer where id = ?";
+    private static final String SELECT_WITH_PAGE = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id LIMIT ? OFFSET ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -164,5 +166,32 @@ public class ComputerDAO {
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> suppression ordinateur" + e.getMessage());
 	}
+    }
+
+    /**
+     * Liste tous les ordinateurs dans une page spécifique
+     * 
+     * @param p les informations qui doivent être contenues dans la page p
+     * @return la liste d'ordinateurs
+     */
+    public List<Computer> getByPage(Page p) {
+	List<Computer> computers = new ArrayList<Computer>();
+
+	try {
+	    PreparedStatement statement = connect.prepareStatement(SELECT_WITH_PAGE);
+
+	    statement.setInt(1, p.getRows());
+	    statement.setInt(2, p.getFirstLine());
+
+	    ResultSet resultSet = statement.executeQuery();
+	    while (resultSet.next()) {
+		Computer computer = ComputerMapper.map(resultSet);
+		computers.add(computer);
+	    }
+	} catch (SQLException e) {
+	    System.err
+		    .println("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
+	}
+	return computers;
     }
 }
