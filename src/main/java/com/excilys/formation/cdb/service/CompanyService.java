@@ -28,4 +28,9 @@ public class CompanyService {
     public List<Company> getAllByPage(Page page) {
 	return companyDAO.getByPage(page);
     }
+
+    public void close() {
+	companyDAO.closeConnect();
+    }
+
 }

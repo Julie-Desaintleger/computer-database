@@ -1,5 +1,7 @@
 package com.excilys.formation.cdb.persistence;
 
+import static com.excilys.formation.cdb.persistence.UtilDAO.fermetureSilencieuse;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -43,10 +45,12 @@ public class ComputerDAO {
      */
     public List<Computer> getAll() {
 	List<Computer> computerList = new ArrayList<Computer>();
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(SELECT_ALL);
-	    ResultSet resultSet = statement.executeQuery();
+	    statement = connect.prepareStatement(SELECT_ALL);
+	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
@@ -54,6 +58,9 @@ public class ComputerDAO {
 	    }
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return computerList;
     }
@@ -65,10 +72,12 @@ public class ComputerDAO {
      */
     public int countAll() {
 	int result = 0;
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(COUNT);
-	    ResultSet resultSet = statement.executeQuery();
+	    statement = connect.prepareStatement(COUNT);
+	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
 		result = resultSet.getInt("nb_computer");
@@ -76,6 +85,9 @@ public class ComputerDAO {
 	    System.out.println("Nombre total d'entrées dans la base : " + result);
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> Compter tous les ordinateurs");
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return result;
     }
@@ -88,17 +100,23 @@ public class ComputerDAO {
      */
     public Computer findById(Long id) {
 	Computer computer = null;
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
+
 	if (id != null) {
 	    try {
-		PreparedStatement statement = connect.prepareStatement(SELECT_BY_ID);
+		statement = connect.prepareStatement(SELECT_BY_ID);
 		statement.setLong(1, id);
-		ResultSet resultSet = statement.executeQuery();
+		resultSet = statement.executeQuery();
 
 		while (resultSet.next()) {
 		    computer = ComputerMapper.map(resultSet);
 		}
 	    } catch (SQLException e) {
 		System.err.println("Erreur DAO -> Ordinateur par id : " + e.getMessage());
+	    } finally {
+		fermetureSilencieuse(resultSet);
+		fermetureSilencieuse(statement);
 	    }
 	}
 	return computer;
@@ -110,9 +128,11 @@ public class ComputerDAO {
      * @param computer l'ordinateur à insérer en base
      */
     public void create(Computer computer) {
+	PreparedStatement statement = null;
+
 	if (computer != null) {
 	    try {
-		PreparedStatement statement = connect.prepareStatement(INSERT);
+		statement = connect.prepareStatement(INSERT);
 		statement.setString(1, computer.getName());
 		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
 		statement.setDate(2, introducedDate);
@@ -126,6 +146,8 @@ public class ComputerDAO {
 	    } catch (SQLException e) {
 		System.err.println(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
+	    } finally {
+		fermetureSilencieuse(statement);
 	    }
 	}
     }
@@ -136,9 +158,11 @@ public class ComputerDAO {
      * @param computer l'ordinateur à mettre à jour en base
      */
     public void update(Computer computer) {
+	PreparedStatement statement = null;
+
 	if (computer != null) {
 	    try {
-		PreparedStatement statement = connect.prepareStatement(UPDATE);
+		statement = connect.prepareStatement(UPDATE);
 		statement.setString(1, computer.getName());
 		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
 		statement.setDate(2, introducedDate);
@@ -149,6 +173,8 @@ public class ComputerDAO {
 		statement.execute();
 	    } catch (SQLException e) {
 		System.err.println("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
+	    } finally {
+		fermetureSilencieuse(statement);
 	    }
 	}
     }
@@ -159,12 +185,16 @@ public class ComputerDAO {
      * @param id l'identifiant de l'ordinateur à supprimer en base
      */
     public void delete(Long id) {
+	PreparedStatement statement = null;
+
 	try {
-	    PreparedStatement statement = connect.prepareStatement(DELETE);
+	    statement = connect.prepareStatement(DELETE);
 	    statement.setLong(1, id);
 	    statement.execute();
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> suppression ordinateur" + e.getMessage());
+	} finally {
+	    fermetureSilencieuse(statement);
 	}
     }
 
@@ -176,14 +206,16 @@ public class ComputerDAO {
      */
     public List<Computer> getByPage(Page p) {
 	List<Computer> computers = new ArrayList<Computer>();
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(SELECT_WITH_PAGE);
+	    statement = connect.prepareStatement(SELECT_WITH_PAGE);
 
 	    statement.setInt(1, p.getRows());
 	    statement.setInt(2, p.getFirstLine());
 
-	    ResultSet resultSet = statement.executeQuery();
+	    resultSet = statement.executeQuery();
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
 		computers.add(computer);
@@ -191,7 +223,20 @@ public class ComputerDAO {
 	} catch (SQLException e) {
 	    System.err
 		    .println("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return computers;
+    }
+
+    public void closeConnect() {
+	if (connect != null) {
+	    try {
+		connect.close();
+	    } catch (SQLException e) {
+		System.out.println("Échec de la fermeture de la connexion : " + e.getMessage());
+	    }
+	}
     }
 }

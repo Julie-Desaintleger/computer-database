@@ -1,5 +1,7 @@
 package com.excilys.formation.cdb.persistence;
 
+import static com.excilys.formation.cdb.persistence.UtilDAO.fermetureSilencieuse;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,10 +40,12 @@ public class CompanyDAO {
      */
     public List<Company> getAll() {
 	List<Company> companyList = new ArrayList<Company>();
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(SELECT_ALL);
-	    ResultSet resultSet = statement.executeQuery();
+	    statement = connect.prepareStatement(SELECT_ALL);
+	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
 		Company company = CompanyMapper.map(resultSet);
@@ -49,6 +53,9 @@ public class CompanyDAO {
 	    }
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> Lister toutes les compagnies");
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return companyList;
     }
@@ -60,18 +67,22 @@ public class CompanyDAO {
      */
     public int countAll() {
 	int result = 0;
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(COUNT);
-	    ResultSet resultSet = statement.executeQuery();
+	    statement = connect.prepareStatement(COUNT);
+	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
 		result = resultSet.getInt("nb_company");
 	    }
 	    System.out.println("Nombre total d'entrées dans la base : " + result);
-
 	} catch (SQLException e) {
 	    System.err.println("Erreur DAO -> Compter toutes les compagnies");
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return result;
     }
@@ -84,14 +95,15 @@ public class CompanyDAO {
      */
     public List<Company> getByPage(Page p) {
 	List<Company> companies = new ArrayList<Company>();
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
 
 	try {
-	    PreparedStatement statement = connect.prepareStatement(SELECT_WITH_PAGE);
-
+	    statement = connect.prepareStatement(SELECT_WITH_PAGE);
 	    statement.setInt(1, p.getRows());
 	    statement.setInt(2, p.getFirstLine());
+	    resultSet = statement.executeQuery();
 
-	    ResultSet resultSet = statement.executeQuery();
 	    while (resultSet.next()) {
 		Company company = CompanyMapper.map(resultSet);
 		companies.add(company);
@@ -99,7 +111,21 @@ public class CompanyDAO {
 	} catch (SQLException e) {
 	    System.err
 		    .println("Erreur DAO -> liste des compagnies de la page : " + p.getCurrentPage() + e.getMessage());
+	} finally {
+	    fermetureSilencieuse(resultSet);
+	    fermetureSilencieuse(statement);
 	}
 	return companies;
     }
+
+    public void closeConnect() {
+	if (connect != null) {
+	    try {
+		connect.close();
+	    } catch (SQLException e) {
+		System.out.println("Échec de la fermeture de la connexion : " + e.getMessage());
+	    }
+	}
+    }
+
 }

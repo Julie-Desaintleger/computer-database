@@ -269,6 +269,11 @@ public class Cli {
 	select_option();
     }
 
+    public static void stop() {
+	companyService.close();
+	computerService.close();
+    }
+
     /**
      * Traitement pour les entrées du client
      */
@@ -309,11 +314,13 @@ public class Cli {
 		break;
 	    case ("q"):
 		System.out.println("Merci. Au revoir !");
-		isContinue = false; // TO DO close connexion
+		isContinue = false;
+		stop();
 		break;
 
 	    default:
 		System.out.println("Recommencez... je n'ai pas compris");
+		cmd();
 		break;
 	    }
 	}

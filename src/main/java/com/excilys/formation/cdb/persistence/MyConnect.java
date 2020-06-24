@@ -71,4 +71,13 @@ public class MyConnect {
 	return null;
     }
 
+    public static void fermetureSilencieuse(Connection connexion) {
+	if (connexion != null) {
+	    try {
+		connexion.close();
+	    } catch (SQLException e) {
+		System.out.println("Échec de la fermeture de la connexion : " + e.getMessage());
+	    }
+	}
+    }
 }

@@ -44,4 +44,9 @@ public class ComputerService {
     public List<Computer> getAllByPage(Page page) {
 	return computerDAO.getByPage(page);
     }
+
+    public void close() {
+	computerDAO.closeConnect();
+    }
+
 }
