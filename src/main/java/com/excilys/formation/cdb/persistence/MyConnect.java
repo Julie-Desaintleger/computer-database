@@ -7,7 +7,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MyConnect {
+    private static Logger logger = LoggerFactory.getLogger(MyConnect.class);
+
     private static Connection connection;
     private static boolean driverImported = false;
     private static String driverName;
@@ -21,7 +26,7 @@ public class MyConnect {
 	    Properties properties = new Properties();
 
 	    if (input == null) {
-		System.err.println("Désolé... impossible de trouver le fichier config.properties");
+		logger.error("Désolé... impossible de trouver le fichier config.properties");
 		return;
 	    }
 
@@ -36,6 +41,7 @@ public class MyConnect {
 	    password = properties.getProperty("db.password");
 
 	} catch (IOException ex) {
+	    logger.trace("error IO ", ex);
 	    ex.printStackTrace();
 	}
     }
@@ -50,8 +56,8 @@ public class MyConnect {
 	    driverImported = true;
 	    return;
 	} catch (Exception e) {
+	    logger.error("Erreur import du driver");
 	    e.printStackTrace();
-	    System.err.println("Erreur import du driver");
 	}
     }
 
@@ -65,8 +71,7 @@ public class MyConnect {
 	} catch (SQLException e) {
 	    e.getMessage();
 	    e.printStackTrace();
-	    System.err.println("Erreur connexion à la BD");
-
+	    logger.error("Erreur connexion à la BD");
 	}
 	return null;
     }
@@ -76,7 +81,7 @@ public class MyConnect {
 	    try {
 		connexion.close();
 	    } catch (SQLException e) {
-		System.out.println("Échec de la fermeture de la connexion : " + e.getMessage());
+		logger.error("Échec de la fermeture de la connexion : " + e.getMessage());
 	    }
 	}
     }
