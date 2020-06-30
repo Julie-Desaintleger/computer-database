@@ -4,7 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class UtilDAO {
+    private final static Logger logger = LoggerFactory.getLogger(UtilDAO.class);
 
     /*
      * Constructeur caché par défaut (car c'est une classe finale utilitaire,
@@ -23,7 +27,7 @@ public final class UtilDAO {
 	    try {
 		resultSet.close();
 	    } catch (SQLException e) {
-		System.out.println("Échec de la fermeture du resultSet : " + e.getMessage());
+		logger.error("Échec de la fermeture du resultSet : " + e.getMessage());
 	    }
 	}
     }
@@ -38,7 +42,7 @@ public final class UtilDAO {
 	    try {
 		statement.close();
 	    } catch (SQLException e) {
-		System.out.println("Échec de la fermeture du statement : " + e.getMessage());
+		logger.error("Échec de la fermeture du statement : " + e.getMessage());
 	    }
 	}
     }

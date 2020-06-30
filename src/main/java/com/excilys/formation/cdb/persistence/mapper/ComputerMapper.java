@@ -3,6 +3,9 @@ package com.excilys.formation.cdb.persistence.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.model.Computer;
 
 public class ComputerMapper {
@@ -12,6 +15,7 @@ public class ComputerMapper {
     private static final String INTRODUCED = "introduced";
     private static final String DISCONTINUED = "discontinued";
     private static final String COMPANY_ID = "company_id";
+    private static Logger logger = LoggerFactory.getLogger(ComputerMapper.class);
 
     /**
      * S'occupe de la conversion du résultat en entité
@@ -26,7 +30,7 @@ public class ComputerMapper {
 	    checkDiscontinued(resultSet);
 	    newComputer.setIdCompany(resultSet.getLong(COMPANY_ID));
 	} catch (SQLException e) {
-	    System.err.println("Erreur -> Mapping Computer");
+	    logger.error("Erreur -> Mapping Computer");
 	}
 	return newComputer;
     }

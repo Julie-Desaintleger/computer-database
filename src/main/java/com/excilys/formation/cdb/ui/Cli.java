@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Page;
@@ -14,6 +17,7 @@ public class Cli {
     private static Scanner sc;
     private static CompanyService companyService;
     private static ComputerService computerService;
+    private final static Logger logger = LoggerFactory.getLogger(Cli.class);
 
     /**
      * Liste toutes les entreprises dans la base
@@ -54,7 +58,7 @@ public class Cli {
 	if (idComputer != null) {
 	    checkId(idComputer);
 	} else {
-	    System.err.println("Erreur pour la récupération de l'id");
+	    logger.error("Erreur pour la récupération de l'id");
 	}
     }
 
@@ -77,7 +81,7 @@ public class Cli {
 		isCorrectId = true;
 		System.out.println("id Computer : " + idComputer);
 	    } catch (Exception e) {
-		System.err.println("Entrez un nombre..." + e.getMessage());
+		logger.error("Entrez un nombre..." + e.getMessage());
 	    }
 	}
 	return idComputer;
@@ -99,10 +103,10 @@ public class Cli {
 		isPresent = true;
 		System.out.println("L'id correspond à l'ordinateur suivant : \n" + c.toString());
 	    } else {
-		System.err.println("L'id ne correspond à aucun ordinateur");
+		logger.error("L'id ne correspond à aucun ordinateur");
 	    }
 	} else {
-	    System.err.println("Erreur récupération sur l'id");
+	    logger.error("Erreur récupération sur l'id");
 	}
 	return isPresent;
     }
@@ -133,7 +137,7 @@ public class Cli {
 	System.out.println("Entrez un nom pour l'ordinateur : ");
 	String name = sc.nextLine();
 	if (name.isEmpty()) {
-	    System.err.print("Le nom ne peut pas être vide");
+	    logger.error("Le nom ne peut pas être vide");
 	} else {
 
 	    try {
@@ -156,7 +160,7 @@ public class Cli {
 		newComputer = new Computer(name, dateContinued, dateDiscontinued, idComputer);
 		System.out.println("Nouvel ordinateur : " + newComputer.toString());
 	    } catch (Exception e) {
-		System.err.println("Erreur de format " + e.getMessage());
+		logger.error("Erreur de format " + e.getMessage());
 	    }
 	}
 	return newComputer;
@@ -238,7 +242,7 @@ public class Cli {
 		return;
 	    }
 	} catch (NumberFormatException e) {
-	    System.err.println("Vous n'avez pas tapé un id de page valide");
+	    logger.error("Vous n'avez pas tapé un id de page valide");
 	}
     }
 

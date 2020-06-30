@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
@@ -17,6 +20,7 @@ import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
 public class ComputerDAO {
     private static ComputerDAO computerDAO;
     private Connection connect = MyConnect.getConnection();
+    private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
     private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
@@ -57,7 +61,7 @@ public class ComputerDAO {
 		computerList.add(computer);
 	    }
 	} catch (SQLException e) {
-	    System.err.println("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
+	    logger.error("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
 	} finally {
 	    fermetureSilencieuse(resultSet);
 	    fermetureSilencieuse(statement);
@@ -82,9 +86,9 @@ public class ComputerDAO {
 	    while (resultSet.next()) {
 		result = resultSet.getInt("nb_computer");
 	    }
-	    System.out.println("Nombre total d'entrées dans la base : " + result);
+	    logger.info("Nombre total d'entrées dans la base : " + result);
 	} catch (SQLException e) {
-	    System.err.println("Erreur DAO -> Compter tous les ordinateurs");
+	    logger.error("Erreur DAO -> Compter tous les ordinateurs");
 	} finally {
 	    fermetureSilencieuse(resultSet);
 	    fermetureSilencieuse(statement);
@@ -113,7 +117,7 @@ public class ComputerDAO {
 		    computer = ComputerMapper.map(resultSet);
 		}
 	    } catch (SQLException e) {
-		System.err.println("Erreur DAO -> Ordinateur par id : " + e.getMessage());
+		logger.error("Erreur DAO -> Ordinateur par id : " + e.getMessage());
 	    } finally {
 		fermetureSilencieuse(resultSet);
 		fermetureSilencieuse(statement);
@@ -144,7 +148,7 @@ public class ComputerDAO {
 		}
 		statement.execute();
 	    } catch (SQLException e) {
-		System.err.println(
+		logger.error(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
 	    } finally {
 		fermetureSilencieuse(statement);
@@ -172,7 +176,7 @@ public class ComputerDAO {
 		statement.setLong(5, computer.getId());
 		statement.execute();
 	    } catch (SQLException e) {
-		System.err.println("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
+		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    } finally {
 		fermetureSilencieuse(statement);
 	    }
@@ -192,7 +196,7 @@ public class ComputerDAO {
 	    statement.setLong(1, id);
 	    statement.execute();
 	} catch (SQLException e) {
-	    System.err.println("Erreur DAO -> suppression ordinateur" + e.getMessage());
+	    logger.error("Erreur DAO -> suppression ordinateur" + e.getMessage());
 	} finally {
 	    fermetureSilencieuse(statement);
 	}
@@ -221,8 +225,7 @@ public class ComputerDAO {
 		computers.add(computer);
 	    }
 	} catch (SQLException e) {
-	    System.err
-		    .println("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
+	    logger.error("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
 	} finally {
 	    fermetureSilencieuse(resultSet);
 	    fermetureSilencieuse(statement);
@@ -235,7 +238,7 @@ public class ComputerDAO {
 	    try {
 		connect.close();
 	    } catch (SQLException e) {
-		System.out.println("Échec de la fermeture de la connexion : " + e.getMessage());
+		logger.error("Échec de la fermeture de la connexion : " + e.getMessage());
 	    }
 	}
     }
