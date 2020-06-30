@@ -24,4 +24,5 @@ build.log
 .classpath
 .settings/*
 src/main/resources/config.properties
+src/test/resources/config.properties
 WebContent/
