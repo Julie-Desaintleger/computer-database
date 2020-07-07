@@ -38,13 +38,13 @@ public class ComputerMapper {
     private static void checkDiscontinued(ResultSet resultSet) throws SQLException {
 	if (resultSet.getDate(DISCONTINUED) != null
 		&& resultSet.getDate(DISCONTINUED).after(resultSet.getDate(INTRODUCED))) {
-	    newComputer.setDiscontinued(resultSet.getDate(DISCONTINUED));
+	    newComputer.setDiscontinued(resultSet.getDate(DISCONTINUED).toLocalDate());
 	}
     }
 
     private static void checkIsNullIntroduced(ResultSet resultSet) throws SQLException {
 	if (resultSet.getDate(INTRODUCED) != null) {
-	    newComputer.setIntroduced(resultSet.getDate(INTRODUCED));
+	    newComputer.setIntroduced(resultSet.getDate(INTRODUCED).toLocalDate());
 	}
     }
 }

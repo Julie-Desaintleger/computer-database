@@ -138,9 +138,10 @@ public class ComputerDAO {
 	    try {
 		statement = connect.prepareStatement(INSERT);
 		statement.setString(1, computer.getName());
-		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
+		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
 		statement.setDate(2, introducedDate);
-		Date discontinuedDate = computer.getDiscontinued() == null ? null : computer.getDiscontinued();
+		Date discontinuedDate = computer.getDiscontinued() == null ? null
+			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
 		Long idCompany = computer.getIdCompany();
 		if (idCompany != null) {
@@ -168,9 +169,10 @@ public class ComputerDAO {
 	    try {
 		statement = connect.prepareStatement(UPDATE);
 		statement.setString(1, computer.getName());
-		Date introducedDate = computer.getIntroduced() == null ? null : computer.getIntroduced();
+		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
 		statement.setDate(2, introducedDate);
-		Date discontinuedDate = computer.getDiscontinued() == null ? null : computer.getDiscontinued();
+		Date discontinuedDate = computer.getDiscontinued() == null ? null
+			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
 		statement.setLong(4, computer.getIdCompany());
 		statement.setLong(5, computer.getId());

@@ -1,6 +1,6 @@
 package com.excilys.formation.cdb.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 /**
  * Un ordinateur doit obligatoirement avoir au moins un nom. Si cela est
@@ -13,11 +13,11 @@ import java.sql.Date;
 public class Computer {
     private long id;
     private String name;
-    private Date introduced;
-    private Date discontinued;
+    private LocalDate introduced;
+    private LocalDate discontinued;
     private long idCompany;
 
-    public Computer(long id, String name, Date introduced, Date discontinued, long idCompany) {
+    public Computer(long id, String name, LocalDate introduced, LocalDate discontinued, long idCompany) {
 	super();
 	this.id = id;
 	this.name = name;
@@ -26,7 +26,7 @@ public class Computer {
 	this.idCompany = idCompany;
     }
 
-    public Computer(String name, Date introduced, Date discontinued, long idCompany) {
+    public Computer(String name, LocalDate introduced, LocalDate discontinued, long idCompany) {
 	super();
 	this.name = name;
 	this.introduced = introduced;
@@ -56,19 +56,19 @@ public class Computer {
 	this.name = name;
     }
 
-    public Date getIntroduced() {
+    public LocalDate getIntroduced() {
 	return introduced;
     }
 
-    public void setIntroduced(Date introduced) {
+    public void setIntroduced(LocalDate introduced) {
 	this.introduced = introduced;
     }
 
-    public Date getDiscontinued() {
+    public LocalDate getDiscontinued() {
 	return discontinued;
     }
 
-    public void setDiscontinued(Date discontinued) {
+    public void setDiscontinued(LocalDate discontinued) {
 	this.discontinued = discontinued;
     }
 

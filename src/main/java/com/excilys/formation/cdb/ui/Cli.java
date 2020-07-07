@@ -1,6 +1,7 @@
 package com.excilys.formation.cdb.ui;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -128,8 +129,8 @@ public class Cli {
      * @return les informations sur l'ordinateur
      */
     private static Computer getInfos() {
-	Date dateContinued = null;
-	Date dateDiscontinued = null;
+	LocalDate dateContinued = null;
+	LocalDate dateDiscontinued = null;
 	Long idComputer = null;
 	Computer newComputer = null;
 	String answer;
@@ -144,12 +145,12 @@ public class Cli {
 		System.out.println("Entrez la date d'introduction au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
 		if (answer.length() > 0) {
-		    dateContinued = Date.valueOf(answer);
+		    dateContinued = Date.valueOf(answer).toLocalDate();
 		}
 		System.out.println("Entrez la date Discontinued au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
 		if (answer.length() > 0) {
-		    dateDiscontinued = Date.valueOf(answer);
+		    dateDiscontinued = Date.valueOf(answer).toLocalDate();
 		}
 		System.out.println("Entrez l'ID de la compagnie (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
