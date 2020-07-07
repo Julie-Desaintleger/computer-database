@@ -8,7 +8,7 @@ import com.excilys.formation.cdb.persistence.ComputerDAO;
 
 public class ComputerService {
     private static ComputerService computerService;
-    private ComputerDAO computerDAO = ComputerDAO.getInstance();
+    private static ComputerDAO computerDAO = ComputerDAO.getInstance();
 
     public static ComputerService getInstance() {
 	if (computerService == null) {
@@ -17,7 +17,7 @@ public class ComputerService {
 	return computerService;
     }
 
-    public List<Computer> getAll() {
+    public static List<Computer> getAll() {
 	return computerDAO.getAll();
     }
 
