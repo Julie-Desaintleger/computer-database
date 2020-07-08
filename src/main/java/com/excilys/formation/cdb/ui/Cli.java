@@ -133,6 +133,7 @@ public class Cli {
 	LocalDate dateDiscontinued = null;
 	Long idComputer = null;
 	Computer newComputer = null;
+	Company newCompany = null;
 	String answer;
 
 	System.out.println("Entrez un nom pour l'ordinateur : ");
@@ -153,12 +154,17 @@ public class Cli {
 		    dateDiscontinued = Date.valueOf(answer).toLocalDate();
 		}
 		System.out.println("Entrez l'ID de la compagnie (<Entrer> pour ignorer) : ");
-		answer = sc.nextLine();
-		if (answer.length() > 0) {
-		    idComputer = Long.parseLong(answer);
-
+		try {
+		    answer = sc.nextLine();
+		    if (answer.length() > 0) {
+			idComputer = Long.parseLong(answer);
+			newCompany = companyService.getById(idComputer);
+		    }
+		} catch (Exception e) {
+		    logger.error("L'id doit être un nombre", e.getMessage());
+		    newCompany = null;
 		}
-		newComputer = new Computer(name, dateContinued, dateDiscontinued, idComputer);
+		newComputer = new Computer(name, dateContinued, dateDiscontinued, newCompany);
 		System.out.println("Nouvel ordinateur : " + newComputer.toString());
 	    } catch (Exception e) {
 		logger.error("Erreur de format " + e.getMessage());
