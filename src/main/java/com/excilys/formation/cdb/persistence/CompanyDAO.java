@@ -22,6 +22,7 @@ public class CompanyDAO {
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
 
     private static final String SELECT_ALL = "SELECT id, name FROM company ORDER BY id";
+    private static final String SELECT_BY_ID = "SELECT id, name FROM company WHERE company.id = ?";
     private static final String COUNT = "SELECT COUNT(id) AS nb_company FROM company";
     private static final String SELECT_WITH_PAGE = "SELECT id, name FROM company ORDER BY id LIMIT ? OFFSET ?";
 
@@ -119,6 +120,30 @@ public class CompanyDAO {
 	    fermetureSilencieuse(statement);
 	}
 	return companies;
+    }
+
+    public Company findById(Long id) {
+	Company company = null;
+	PreparedStatement statement = null;
+	ResultSet resultSet = null;
+
+	if (id != null) {
+	    try {
+		statement = connect.prepareStatement(SELECT_BY_ID);
+		statement.setLong(1, id);
+		resultSet = statement.executeQuery();
+
+		while (resultSet.next()) {
+		    company = CompanyMapper.map(resultSet);
+		}
+	    } catch (SQLException e) {
+		logger.error("Erreur DAO -> Compagnie par id : " + e.getMessage());
+	    } finally {
+		fermetureSilencieuse(resultSet);
+		fermetureSilencieuse(statement);
+	    }
+	}
+	return company;
     }
 
     public void closeConnect() {
