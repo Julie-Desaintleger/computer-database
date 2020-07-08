@@ -5,11 +5,13 @@ public class Page {
     private int rows;
     private int currentPage;
     private int totalPage;
+    private static final int DEFAULT_PAGE = 1;
+    private static final int MAX_LINES = 20;
 
     public Page() {
 	this.firstLine = 0;
-	this.rows = 10;
-	this.currentPage = 1;
+	this.rows = MAX_LINES;
+	this.currentPage = DEFAULT_PAGE;
     }
 
     public int getFirstLine() {
