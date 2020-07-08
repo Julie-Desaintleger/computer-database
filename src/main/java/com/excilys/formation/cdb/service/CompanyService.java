@@ -29,6 +29,10 @@ public class CompanyService {
 	return companyDAO.getByPage(page);
     }
 
+    public Company getById(Long id) {
+	return companyDAO.findById(id);
+    }
+
     public void close() {
 	companyDAO.closeConnect();
     }
