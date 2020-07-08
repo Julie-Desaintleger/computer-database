@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import com.excilys.formation.cdb.model.Company;
 
 public class CompanyMapper {
-    private static Company newCompany;
     private static Logger logger = LoggerFactory.getLogger(CompanyMapper.class);
+    private static final String ID_COMPANY = "id";
+    private static final String NAME = "name";
 
     /**
      * S'occupe de la conversion du résultat en entité
@@ -19,12 +20,16 @@ public class CompanyMapper {
      * @return une entité Company correspondante
      */
     public static Company map(ResultSet resultSet) {
+	Company company = new Company();
 	try {
-	    newCompany = new Company(resultSet.getLong("id"), resultSet.getString("name"));
+	    Long id = resultSet.getLong(ID_COMPANY);
+	    String name = resultSet.getString(NAME);
+	    company.setId(id);
+	    company.setName(name);
 	} catch (SQLException e) {
-	    logger.error("Erreur -> Mapping Company");
+	    logger.error("Erreur -> Mapping ResultSet to Company", e.getMessage());
 	}
-	return newCompany;
+	return company;
     }
 
 }
