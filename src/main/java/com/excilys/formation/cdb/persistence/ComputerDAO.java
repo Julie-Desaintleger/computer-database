@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class ComputerDAO {
 
     private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
-    private static final String SELECT_BY_ID = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE computer.id = ?";
+    private static final String SELECT_BY_ID = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM computer where id = ?";
-    private static final String SELECT_WITH_PAGE = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id LIMIT ? OFFSET ?";
+    private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY id LIMIT ? OFFSET ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -143,9 +144,11 @@ public class ComputerDAO {
 		Date discontinuedDate = computer.getDiscontinued() == null ? null
 			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
-		Long idCompany = computer.getIdCompany();
-		if (idCompany != null) {
-		    statement.setLong(4, idCompany);
+		// cas pas gérer si, la compagnie n'existe pas en base
+		if (computer.getCompany().getId() != 0L) {
+		    statement.setLong(4, computer.getCompany().getId());
+		} else {
+		    statement.setNull(4, Types.BIGINT);
 		}
 		statement.execute();
 	    } catch (SQLException e) {
@@ -174,7 +177,11 @@ public class ComputerDAO {
 		Date discontinuedDate = computer.getDiscontinued() == null ? null
 			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
-		statement.setLong(4, computer.getIdCompany());
+		if (computer.getCompany().getId() == 0L) {
+		    statement.setNull(4, Types.BIGINT);
+		} else {
+		    statement.setLong(4, computer.getCompany().getId());
+		}
 		statement.setLong(5, computer.getId());
 		statement.execute();
 	    } catch (SQLException e) {
@@ -225,6 +232,7 @@ public class ComputerDAO {
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
 		computers.add(computer);
+
 	    }
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
