@@ -11,40 +11,47 @@ import java.time.LocalDate;
  *
  */
 public class Computer {
-    private long id;
+    private Long id;
     private String name;
     private LocalDate introduced;
     private LocalDate discontinued;
-    private long idCompany;
+    private Company company;
 
-    public Computer(long id, String name, LocalDate introduced, LocalDate discontinued, long idCompany) {
-	super();
+    public Computer(Long id, String name, LocalDate introduced, LocalDate discontinued, Company company) {
 	this.id = id;
 	this.name = name;
 	this.introduced = introduced;
 	this.discontinued = discontinued;
-	this.idCompany = idCompany;
+	this.company = company;
     }
 
-    public Computer(String name, LocalDate introduced, LocalDate discontinued, long idCompany) {
+    public Computer(String name, LocalDate introduced, LocalDate discontinued, Company company) {
 	super();
 	this.name = name;
 	this.introduced = introduced;
 	this.discontinued = discontinued;
-	this.idCompany = idCompany;
+	this.company = company;
     }
 
-    public Computer(long id, String name) {
+    public Computer(Long id, String name) {
 	super();
 	this.id = id;
 	this.name = name;
     }
 
-    public long getId() {
+    public Computer() {
+	id = null;
+	name = null;
+	introduced = null;
+	discontinued = null;
+	company = null;
+    }
+
+    public Long getId() {
 	return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
 	this.id = id;
     }
 
@@ -72,18 +79,61 @@ public class Computer {
 	this.discontinued = discontinued;
     }
 
-    public long getIdCompany() {
-	return idCompany;
+    public Company getCompany() {
+	return company;
     }
 
-    public void setIdCompany(long idCompany) {
-	this.idCompany = idCompany;
+    public void setCompany(Company company) {
+	this.company = company;
     }
 
     @Override
     public String toString() {
 	return "Computer\t|\tid = " + id + "\t|\tname = " + name + "\t|\tintroduced = " + introduced
-		+ "\t|\tdiscontinued = " + discontinued + "\t|\tidCompany = " + idCompany;
+		+ "\t|\tdiscontinued = " + discontinued + "\t|\tcompany = " + company.getName();
+    }
+
+    public static class Builder {
+	private Long id;
+	private String name;
+	private LocalDate introduced;
+	private LocalDate discontinued;
+	private Company company;
+
+	public Builder setId(Long id) {
+	    this.id = id;
+	    return this;
+	}
+
+	public Builder setName(String name) {
+	    this.name = name;
+	    return this;
+	}
+
+	public Builder setIntroduced(LocalDate introduced) {
+	    this.introduced = introduced;
+	    return this;
+	}
+
+	public Builder setDiscontinued(LocalDate discontinued) {
+	    this.discontinued = discontinued;
+	    return this;
+	}
+
+	public Builder setCompany(Company company) {
+	    this.company = company;
+	    return this;
+	}
+
+	public Computer build() {
+	    Computer computer = new Computer();
+	    computer.id = this.id;
+	    computer.name = this.name;
+	    computer.introduced = this.introduced;
+	    computer.discontinued = this.discontinued;
+	    computer.company = this.company;
+	    return computer;
+	}
     }
 
 }
