@@ -49,7 +49,7 @@ public class ListComputersServlet extends HttpServlet {
 	    int lineAsked = Integer.parseInt(request.getParameter("lineNumber"));
 	    page.setRows(lineAsked);
 	    page.setCurrentPage(1);
-	    page.setFirstLine(1);
+	    page.setFirstLine(0);
 	    nbPages = page.getTotalPages(nbComputers);
 	}
 
