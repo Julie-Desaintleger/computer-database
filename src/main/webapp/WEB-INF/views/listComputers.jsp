@@ -28,6 +28,11 @@
 				<c:out value="${nbComputers}" />
 				Computers found
 			</h1>
+			<div id="actions" class="form-horizontal">
+                <div class="pull-right">
+                    <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> 
+                </div>
+            </div>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
