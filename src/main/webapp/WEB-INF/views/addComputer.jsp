@@ -30,14 +30,16 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
                                 <input type="text" class="form-control" id="computerName" name="computerName" value="<c:out value="${param.computerName}"/>"placeholder="Computer name">
+                            	<p class="error">${errors['computerName']}</p>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" id="introduced" name="introduced" value="<c:out value="${param.introduced}"/>" placeholder="Introduced date">
+                                <input type="date" class="form-control" id="introduced" name="introduced" value="<c:out value="${param.introduced}"/>" placeholder="Introduced date YYYY-MM-DD">
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" id="discontinued" name="discontinued" value="<c:out value="${param.discontinued}"/>" placeholder="Discontinued date">
+                                <input type="date" class="form-control" id="discontinued" name="discontinued" value="<c:out value="${param.discontinued}"/>" placeholder="Discontinued date YYYY-MM-DD">
+                            	<p class="error">${errors['discontinued']}</p>
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>
@@ -54,6 +56,7 @@
                             or
                             <a href="listComputers" class="btn btn-default">Cancel</a>
                         </div>
+                        <p class="${empty errors ? 'success' : 'error'}">${result}</p>
                     </form>
                 </div>
             </div>

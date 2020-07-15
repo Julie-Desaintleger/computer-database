@@ -2,7 +2,9 @@ package com.excilys.formation.cdb.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +23,7 @@ import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
+import com.excilys.formation.cdb.validator.ComputerValidator;
 
 /**
  * Servlet implementation class AddComputerServlet
@@ -54,33 +57,45 @@ public class AddComputerServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-
 	ComputerDTO computerDTO = new ComputerDTO();
 	CompanyDTO companyDTO = new CompanyDTO();
 	Computer computer = new Computer();
 
+	Map<String, String> errors = new HashMap<String, String>();
+	String result;
+
 	try {
-	    request.getParameter("computerName");
+	    ComputerValidator.validatorName(request.getParameter("computerName"));
 	    computerDTO.setName(request.getParameter("computerName"));
 	} catch (Exception e) {
 	    logger.error("computer name", e.getMessage());
+	    errors.put("computerName", e.getMessage());
 	}
 
 	try {
-	    request.getParameter("introduced");
+	    ComputerValidator.validatorDate(request.getParameter("introduced"), request.getParameter("discontinued"));
 	    computerDTO.setIntroduced(request.getParameter("introduced"));
-	    request.getParameter("discontinued");
 	    computerDTO.setDiscontinued(request.getParameter("discontinued"));
-
 	} catch (Exception e) {
 	    logger.error("error with introduced/discontinued", e.getMessage());
+	    errors.put("Date with discontinued", e.getMessage());
 	}
 
-	companyDTO.setId(request.getParameter("companyId"));
-	computerDTO.setCompany(companyDTO);
-	computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
-	computerService.insert(computer);
+	if (errors.isEmpty()) {
+	    companyDTO.setId(request.getParameter("companyId"));
+	    computerDTO.setCompany(companyDTO);
+	    computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
+	    computerService.insert(computer);
+	    result = "Computer added with success.";
+	    logger.info("Insert computer done");
+	} else {
+	    result = "Fail to add this computer.";
+	    logger.info("Insert don't work");
 
+	}
+
+	request.setAttribute("errors", errors);
+	request.setAttribute("result", result);
 	doGet(request, response);
 
     }
