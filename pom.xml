@@ -5,56 +5,67 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.excilys.formation.cdb</groupId>
-	<artifactId>computer-database2</artifactId>
+	<artifactId>computer-database</artifactId>
 	<version>1.0</version>
-	<packaging>jar</packaging>
-	<name>computer-database2</name>
+	<packaging>war</packaging>
+	<name>computer-database</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<mysql.version>8.0.20</mysql.version>
+		<junit.version>4.13</junit.version>
+		<slf4j-api.version>1.7.30</slf4j-api.version>
 		<logback.version>1.2.3</logback.version>
+		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+		<taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
+		<jstl-impl.version>1.2</jstl-impl.version>
 	</properties>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.20</version>
+			<version>${mysql.version}</version>
+			<scope>runtime</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- SLF4J - API -->
+	
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
+			<version>${slf4j-api.version}</version>
 		</dependency>
-		
-		<!-- logback -->
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet-api.version}</version>
+			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.taglibs</groupId>
+			<artifactId>taglibs-standard-impl</artifactId>
+			<version>${taglibs-standard-impl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jstl-impl</artifactId>
+			<version>${jstl-impl.version}</version>
+		</dependency>
+		
 	</dependencies>
 </project>
