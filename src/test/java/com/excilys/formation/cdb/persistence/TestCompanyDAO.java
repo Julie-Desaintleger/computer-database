@@ -26,8 +26,9 @@ public class TestCompanyDAO {
     public void testGetAll() {
 	CompanyDAO companyDao = CompanyDAO.getInstance();
 	List<Company> companyList = companyDao.getAll();
-	List<Company> companyListToCheck = Arrays.asList(new Company(1, "Apple Inc."), new Company(2, "Nokia"),
-		new Company(3, "ASUS"), new Company(4, "Hewlett-Packard"));
+	List<Company> companyListToCheck = Arrays.asList(new Company(Long.valueOf(1), "Apple Inc."),
+		new Company(Long.valueOf(2), "Nokia"), new Company(Long.valueOf(3), "ASUS"),
+		new Company(Long.valueOf(4), "Hewlett-Packard"));
 
 	assertEquals(companyList.toString(), companyListToCheck.toString());
     }
@@ -36,7 +37,8 @@ public class TestCompanyDAO {
     public void testNotGetAll() {
 	CompanyDAO companyDao = CompanyDAO.getInstance();
 	List<Company> companyList = companyDao.getAll();
-	List<Company> companyListToCheck = Arrays.asList(new Company(1, "Apple Inc."), new Company(2, "Nokia"));
+	List<Company> companyListToCheck = Arrays.asList(new Company(Long.valueOf(1), "Apple Inc."),
+		new Company(Long.valueOf(2), "Nokia"));
 
 	assertNotEquals(companyList.toString(), companyListToCheck.toString());
     }
