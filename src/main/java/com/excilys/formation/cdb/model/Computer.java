@@ -90,7 +90,7 @@ public class Computer {
     @Override
     public String toString() {
 	return "Computer\t|\tid = " + id + "\t|\tname = " + name + "\t|\tintroduced = " + introduced
-		+ "\t|\tdiscontinued = " + discontinued + "\t|\tcompany = " + company.getName();
+		+ "\t|\tdiscontinued = " + discontinued + "\t|\tcompany = " + company;
     }
 
     public static class Builder {
