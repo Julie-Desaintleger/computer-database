@@ -35,11 +35,12 @@
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
                                 <input type="date" class="form-control" id="introduced" name="introduced" value="<c:out value="${param.introduced}"/>" placeholder="Introduced date YYYY-MM-DD">
+                            	<p class="error">${errors['dateIntroduced']}</p>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
                                 <input type="date" class="form-control" id="discontinued" name="discontinued" value="<c:out value="${param.discontinued}"/>" placeholder="Discontinued date YYYY-MM-DD">
-                            	<p class="error">${errors['discontinued']}</p>
+                            	<p class="error">${errors['dateDiscontinued']}</p>
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>

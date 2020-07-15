@@ -19,6 +19,9 @@ import com.excilys.formation.cdb.dto.CompanyDTO;
 import com.excilys.formation.cdb.dto.ComputerDTO;
 import com.excilys.formation.cdb.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
+import com.excilys.formation.cdb.exception.DateDiscontinuedException;
+import com.excilys.formation.cdb.exception.EmptyDateException;
+import com.excilys.formation.cdb.exception.NameException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -67,21 +70,27 @@ public class AddComputerServlet extends HttpServlet {
 	try {
 	    ComputerValidator.validatorName(request.getParameter("computerName"));
 	    computerDTO.setName(request.getParameter("computerName"));
-	} catch (Exception e) {
+	} catch (NameException e) {
 	    logger.error("computer name", e.getMessage());
 	    errors.put("computerName", e.getMessage());
 	}
 
-	try {
-	    ComputerValidator.validatorDate(request.getParameter("introduced"), request.getParameter("discontinued"));
-	    computerDTO.setIntroduced(request.getParameter("introduced"));
-	    computerDTO.setDiscontinued(request.getParameter("discontinued"));
-	} catch (Exception e) {
-	    logger.error("error with introduced/discontinued", e.getMessage());
-	    errors.put("Date with discontinued", e.getMessage());
+	if (request.getParameter("discontinued") != null) {
+	    try {
+		ComputerValidator.validatorDate(request.getParameter("introduced"),
+			request.getParameter("discontinued"));
+	    } catch (DateDiscontinuedException e) {
+		logger.error("error with discontinued date", e.getMessage());
+		errors.put("dateDiscontinued", e.getMessage());
+	    } catch (EmptyDateException e) {
+		logger.error("error with introduced/discontinued date", e.getMessage());
+		errors.put("dateIntroduced", e.getMessage());
+	    }
 	}
 
 	if (errors.isEmpty()) {
+	    computerDTO.setIntroduced(request.getParameter("introduced"));
+	    computerDTO.setDiscontinued(request.getParameter("discontinued"));
 	    companyDTO.setId(request.getParameter("companyId"));
 	    computerDTO.setCompany(companyDTO);
 	    computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
@@ -96,6 +105,7 @@ public class AddComputerServlet extends HttpServlet {
 
 	request.setAttribute("errors", errors);
 	request.setAttribute("result", result);
+
 	doGet(request, response);
 
     }
