@@ -23,7 +23,7 @@ public class ComputerDAO {
     private Connection connect = MyConnect.getConnection();
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
-    private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY id";
+    private static final String SELECT_ALL = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id ORDER BY computer.id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String SELECT_BY_ID = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
