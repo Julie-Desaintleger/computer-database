@@ -33,8 +33,4 @@ public class CompanyService {
 	return companyDAO.findById(id);
     }
 
-    public void close() {
-	companyDAO.closeConnect();
-    }
-
 }

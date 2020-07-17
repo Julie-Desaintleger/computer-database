@@ -1,7 +1,5 @@
 package com.excilys.formation.cdb.persistence;
 
-import static com.excilys.formation.cdb.persistence.UtilDAO.fermetureSilencieuse;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +16,7 @@ import com.excilys.formation.cdb.persistence.mapper.CompanyMapper;
 
 public class CompanyDAO {
     private static CompanyDAO companyDAO;
-    private Connection connect = MyConnect.getConnection();
+    private ConnectHikari connect = ConnectHikari.getInstance();
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
 
     private static final String SELECT_ALL = "SELECT id, name FROM company ORDER BY id";
@@ -48,8 +46,8 @@ public class CompanyDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(SELECT_ALL);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(SELECT_ALL);
 	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
@@ -58,9 +56,6 @@ public class CompanyDAO {
 	    }
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> Lister toutes les compagnies");
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return companyList;
     }
@@ -75,8 +70,8 @@ public class CompanyDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(COUNT);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(COUNT);
 	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
@@ -85,9 +80,6 @@ public class CompanyDAO {
 	    logger.info("Nombre total d'entrées dans la base : " + result);
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> Compter toutes les compagnies");
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return result;
     }
@@ -103,8 +95,8 @@ public class CompanyDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(SELECT_WITH_PAGE);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(SELECT_WITH_PAGE);
 	    statement.setInt(1, p.getRows());
 	    statement.setInt(2, p.getFirstLine());
 	    resultSet = statement.executeQuery();
@@ -115,9 +107,6 @@ public class CompanyDAO {
 	    }
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> liste des compagnies de la page : " + p.getCurrentPage() + e.getMessage());
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return companies;
     }
@@ -128,8 +117,8 @@ public class CompanyDAO {
 	ResultSet resultSet = null;
 
 	if (id != null) {
-	    try {
-		statement = connect.prepareStatement(SELECT_BY_ID);
+	    try (Connection connection = ConnectHikari.getConnection()) {
+		statement = connection.prepareStatement(SELECT_BY_ID);
 		statement.setLong(1, id);
 		resultSet = statement.executeQuery();
 
@@ -138,22 +127,9 @@ public class CompanyDAO {
 		}
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> Compagnie par id : " + e.getMessage());
-	    } finally {
-		fermetureSilencieuse(resultSet);
-		fermetureSilencieuse(statement);
 	    }
 	}
 	return company;
-    }
-
-    public void closeConnect() {
-	if (connect != null) {
-	    try {
-		connect.close();
-	    } catch (SQLException e) {
-		logger.error("Échec de la fermeture de la connexion : " + e.getMessage());
-	    }
-	}
     }
 
 }

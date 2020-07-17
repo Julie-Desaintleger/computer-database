@@ -20,6 +20,7 @@
 		<javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 		<taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
 		<jstl-impl.version>1.2</jstl-impl.version>
+		<hikari.version>2.6.3</hikari.version>
 	</properties>
 
 	<dependencies>
@@ -35,7 +36,7 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -66,6 +67,11 @@
 			<artifactId>jstl-impl</artifactId>
 			<version>${jstl-impl.version}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>${hikari.version}</version>
+		</dependency>
 	</dependencies>
 </project>

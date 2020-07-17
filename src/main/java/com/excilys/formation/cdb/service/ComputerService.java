@@ -45,8 +45,4 @@ public class ComputerService {
 	return computerDAO.getByPage(page);
     }
 
-    public void close() {
-	computerDAO.closeConnect();
-    }
-
 }

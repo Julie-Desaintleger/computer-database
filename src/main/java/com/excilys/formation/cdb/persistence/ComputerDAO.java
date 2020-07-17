@@ -1,7 +1,5 @@
 package com.excilys.formation.cdb.persistence;
 
-import static com.excilys.formation.cdb.persistence.UtilDAO.fermetureSilencieuse;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +18,7 @@ import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
 
 public class ComputerDAO {
     private static ComputerDAO computerDAO;
-    private Connection connect = MyConnect.getConnection();
+    private ConnectHikari connect = ConnectHikari.getInstance();
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
     private static final String SELECT_ALL = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id ORDER BY computer.id";
@@ -53,8 +51,8 @@ public class ComputerDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(SELECT_ALL);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(SELECT_ALL);
 	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
@@ -63,9 +61,6 @@ public class ComputerDAO {
 	    }
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return computerList;
     }
@@ -80,8 +75,8 @@ public class ComputerDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(COUNT);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(COUNT);
 	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
@@ -90,9 +85,6 @@ public class ComputerDAO {
 	    logger.info("Nombre total d'entrées dans la base : " + result);
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> Compter tous les ordinateurs");
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return result;
     }
@@ -109,8 +101,8 @@ public class ComputerDAO {
 	ResultSet resultSet = null;
 
 	if (id != null) {
-	    try {
-		statement = connect.prepareStatement(SELECT_BY_ID);
+	    try (Connection connection = ConnectHikari.getConnection()) {
+		statement = connection.prepareStatement(SELECT_BY_ID);
 		statement.setLong(1, id);
 		resultSet = statement.executeQuery();
 
@@ -119,9 +111,6 @@ public class ComputerDAO {
 		}
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> Ordinateur par id : " + e.getMessage());
-	    } finally {
-		fermetureSilencieuse(resultSet);
-		fermetureSilencieuse(statement);
 	    }
 	}
 	return computer;
@@ -136,8 +125,8 @@ public class ComputerDAO {
 	PreparedStatement statement = null;
 
 	if (computer != null) {
-	    try {
-		statement = connect.prepareStatement(INSERT);
+	    try (Connection connection = ConnectHikari.getConnection()) {
+		statement = connection.prepareStatement(INSERT);
 		statement.setString(1, computer.getName());
 		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
 		statement.setDate(2, introducedDate);
@@ -154,8 +143,6 @@ public class ComputerDAO {
 	    } catch (SQLException e) {
 		logger.error(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
-	    } finally {
-		fermetureSilencieuse(statement);
 	    }
 	}
     }
@@ -169,8 +156,8 @@ public class ComputerDAO {
 	PreparedStatement statement = null;
 
 	if (computer != null) {
-	    try {
-		statement = connect.prepareStatement(UPDATE);
+	    try (Connection connection = ConnectHikari.getConnection()) {
+		statement = connection.prepareStatement(UPDATE);
 		statement.setString(1, computer.getName());
 		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
 		statement.setDate(2, introducedDate);
@@ -186,8 +173,6 @@ public class ComputerDAO {
 		statement.execute();
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
-	    } finally {
-		fermetureSilencieuse(statement);
 	    }
 	}
     }
@@ -200,14 +185,12 @@ public class ComputerDAO {
     public void delete(Long id) {
 	PreparedStatement statement = null;
 
-	try {
-	    statement = connect.prepareStatement(DELETE);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(DELETE);
 	    statement.setLong(1, id);
 	    statement.execute();
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> suppression ordinateur" + e.getMessage());
-	} finally {
-	    fermetureSilencieuse(statement);
 	}
     }
 
@@ -222,8 +205,8 @@ public class ComputerDAO {
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try {
-	    statement = connect.prepareStatement(SELECT_WITH_PAGE);
+	try (Connection connection = ConnectHikari.getConnection()) {
+	    statement = connection.prepareStatement(SELECT_WITH_PAGE);
 
 	    statement.setInt(1, p.getRows());
 	    statement.setInt(2, p.getFirstLine());
@@ -236,20 +219,8 @@ public class ComputerDAO {
 	    }
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
-	} finally {
-	    fermetureSilencieuse(resultSet);
-	    fermetureSilencieuse(statement);
 	}
 	return computers;
     }
 
-    public void closeConnect() {
-	if (connect != null) {
-	    try {
-		connect.close();
-	    } catch (SQLException e) {
-		logger.error("Échec de la fermeture de la connexion : " + e.getMessage());
-	    }
-	}
-    }
 }

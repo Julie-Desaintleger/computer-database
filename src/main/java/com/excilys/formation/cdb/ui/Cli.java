@@ -280,11 +280,6 @@ public class Cli {
 	select_option();
     }
 
-    public static void stop() {
-	companyService.close();
-	computerService.close();
-    }
-
     /**
      * Traitement pour les entrées du client
      */
@@ -326,7 +321,6 @@ public class Cli {
 	    case ("q"):
 		System.out.println("Merci. Au revoir !");
 		isContinue = false;
-		stop();
 		break;
 
 	    default:
