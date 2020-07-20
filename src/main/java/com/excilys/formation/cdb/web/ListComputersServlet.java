@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.cdb.dto.ComputerDTO;
 import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
 import com.excilys.formation.cdb.model.Computer;
@@ -24,6 +27,7 @@ public class ListComputersServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static Page page = new Page();
     private static ComputerService computerService = ComputerService.getInstance();
+    private static Logger logger = LoggerFactory.getLogger(ListComputersServlet.class);
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -70,6 +74,14 @@ public class ListComputersServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+	if (request.getParameter("selection") != null) {
+	    String[] idToDelete = request.getParameter("selection").split(",");
+	    for (int i = 0; i < idToDelete.length; i++) {
+		Long id = Long.valueOf(idToDelete[i]);
+		computerService.delete(id);
+		logger.info("Computers deleted");
+	    }
+	}
 	doGet(request, response);
     }
 

@@ -23,16 +23,23 @@
 	</header>
 
 	<section id="main">
+		<h1 id="homeTitle">
+			<c:out value="${nbComputers}" />
+			Computers found
+		</h1>
+		<div id="actions" class="form-horizontal">
+			<div class="pull-right">
+				<a class="btn btn-success" id="addComputer" href="addComputer">Add
+					Computer</a> <a class="btn btn-default" id="editComputer" href="#"
+					onclick="$.fn.toggleEditMode();">Edit</a>
+			</div>
+		</div>
+
+		<form id="deleteForm" action="#" method="POST">
+			<input type="hidden" name="selection" value="">
+		</form>
 		<div class="container" style="margin-top: 10px;">
-			<h1 id="homeTitle">
-				<c:out value="${nbComputers}" />
-				Computers found
-			</h1>
-			<div id="actions" class="form-horizontal">
-                <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> 
-                </div>
-            </div>
+
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -63,7 +70,7 @@
 						varStatus="status">
 						<tr>
 							<td class="editMode"><input type="checkbox" name="cb"
-								class="cb" value="0"></td>
+								class="cb" value="${computer.id}"></td>
 							<td><c:out value="${computer.id}" /></td>
 							<td><a href="editComputer?id=${computer.id}" onclick=""><c:out
 										value="${computer.name}" /></a></td>
