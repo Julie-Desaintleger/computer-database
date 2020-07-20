@@ -25,7 +25,7 @@ public class ComputerDAO {
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String SELECT_BY_ID = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
+    private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE computer.id = ?";
     private static final String DELETE = "DELETE FROM computer where id = ?";
     private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY id LIMIT ? OFFSET ?";
 
@@ -159,18 +159,23 @@ public class ComputerDAO {
 	    try (Connection connection = ConnectHikari.getConnection()) {
 		statement = connection.prepareStatement(UPDATE);
 		statement.setString(1, computer.getName());
-		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
+		Date introducedDate = null;
+		Date discontinuedDate = null;
+		if (computer.getIntroduced() != null) {
+		    introducedDate = Date.valueOf(computer.getIntroduced());
+		}
+		if (computer.getDiscontinued() != null) {
+		    discontinuedDate = Date.valueOf(computer.getDiscontinued());
+		}
 		statement.setDate(2, introducedDate);
-		Date discontinuedDate = computer.getDiscontinued() == null ? null
-			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
-		if (computer.getCompany().getId() == 0L) {
+		if (computer.getCompany().getId() == null || computer.getCompany().getId() == 0L) {
 		    statement.setNull(4, Types.BIGINT);
 		} else {
 		    statement.setLong(4, computer.getCompany().getId());
 		}
 		statement.setLong(5, computer.getId());
-		statement.execute();
+		statement.executeUpdate();
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    }
