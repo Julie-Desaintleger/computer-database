@@ -99,7 +99,7 @@
 				<%--For displaying Previous link except for the 1st page --%>
 				<li><c:if test="${currentPage != 1}">
 						<button
-							onclick="window.location.href='listComputers?pageNumber=${currentPage - 1}'"
+							onclick="window.location.href='listComputers?pageNumber=${currentPage - 1}&search=${search}'"
 							aria-label="Previous">
 							<span aria-hidden="true">&laquo;</span>
 						</button>
@@ -108,13 +108,13 @@
 							<c:choose>
 								<c:when test="${i==0}">
 									<button type="button" class="btn active"
-										onclick="window.location.href='listComputers?pageNumber=${currentPage}'">
+										onclick="window.location.href='listComputers?pageNumber=${currentPage}&search=${search}'">
 										<c:out value="${currentPage}"></c:out>
 									</button>
 								</c:when>
 								<c:otherwise>
 									<button type="button" class="btn btn-default"
-										onclick="window.location.href='listComputers?pageNumber=${currentPage+i}'">
+										onclick="window.location.href='listComputers?pageNumber=${currentPage+i}&search=${search}'">
 										<c:out value="${currentPage+i}"></c:out>
 									</button>
 								</c:otherwise>
@@ -123,7 +123,7 @@
 					</c:forEach> <%--For displaying Next link except for the last page --%> <c:if
 						test="${currentPage != totalPages}">
 						<button
-							onclick="window.location.href='listComputers?pageNumber=${currentPage + 1}'"
+							onclick="window.location.href='listComputers?pageNumber=${currentPage + 1}&search=${search}'"
 							aria-label="Next">
 							<span aria-hidden="true">&raquo;</span>
 						</button>
@@ -134,31 +134,31 @@
 				<c:choose>
 					<c:when test="${ lineNumber eq 10 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=10'">10</button>
+							onclick="window.location.href='listComputers?lineNumber=10&search=${search}'">10</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=10'">10</button>
+							onclick="window.location.href='listComputers?lineNumber=10&search=${search}'">10</button>
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
 					<c:when test="${ lineNumber eq 50 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=50'">50</button>
+							onclick="window.location.href='listComputers?lineNumber=50&search=${search}'">50</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=50'">50</button>
+							onclick="window.location.href='listComputers?lineNumber=50&search=${search}'">50</button>
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
 					<c:when test="${ lineNumber eq 100 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=100'">100</button>
+							onclick="window.location.href='listComputers?lineNumber=100&search=${search}'">100</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=100'">100</button>
+							onclick="window.location.href='listComputers?lineNumber=100&search=${search}'">100</button>
 					</c:otherwise>
 				</c:choose>
 			</div>

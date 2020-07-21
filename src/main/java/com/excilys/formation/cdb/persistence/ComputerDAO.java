@@ -24,14 +24,14 @@ public class ComputerDAO {
     private static final String SELECT_ALL = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id ORDER BY computer.id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String COUNT_SEARCH = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company_id = company.id "
-	    + "WHERE computer.name LIKE ?";
+	    + "WHERE computer.name LIKE ? OR company.name LIKE ?";
     private static final String SELECT_BY_ID = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id WHERE computer.id = ?";
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE computer.id = ?";
     private static final String DELETE = "DELETE FROM computer where id = ?";
     private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY id LIMIT ? OFFSET ?";
     private static final String SELECT_BY_SEARCH = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name"
-	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? ";
+	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY id LIMIT ? OFFSET ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -235,7 +235,8 @@ public class ComputerDAO {
     /**
      * Compter le nombre d'ordinateur à rechercher.
      * 
-     * @param search le pattern de recherche pour un ordinateur
+     * @param search le pattern de recherche soit pour un ordinateur soit pour une
+     *               compagnie
      * @return le nombre d'ordinateur à rechercher.
      */
     public int count(String search) {
@@ -247,6 +248,7 @@ public class ComputerDAO {
 	    } else {
 		statement = connect.prepareStatement(COUNT_SEARCH);
 		statement.setString(1, "%" + search + "%");
+		statement.setString(2, "%" + search + "%");
 	    }
 	    ResultSet result = statement.executeQuery();
 	    result.next();
@@ -276,9 +278,11 @@ public class ComputerDAO {
 		statement.setInt(1, p.getRows());
 		statement.setInt(2, p.getFirstLine());
 	    } else {
-
 		statement = connection.prepareStatement(SELECT_BY_SEARCH);
 		statement.setString(1, "%" + research + "%");
+		statement.setString(2, "%" + research + "%");
+		statement.setInt(3, p.getRows());
+		statement.setInt(4, p.getFirstLine());
 	    }
 
 	    resultSet = statement.executeQuery();
