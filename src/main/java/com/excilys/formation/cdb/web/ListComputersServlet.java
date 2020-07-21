@@ -38,7 +38,8 @@ public class ListComputersServlet extends HttpServlet {
 	List<Computer> computers = new ArrayList<Computer>();
 	List<ComputerDTO> computersDto = new ArrayList<ComputerDTO>();
 
-	int nbComputers = computerService.countAll();
+	String inputSearch = request.getParameter("search");
+	int nbComputers = computerService.countComputers(inputSearch);
 	int nbPages = page.getTotalPage();
 
 	if (request.getParameter("pageNumber") != null) {
@@ -57,13 +58,14 @@ public class ListComputersServlet extends HttpServlet {
 	    nbPages = page.getTotalPages(nbComputers);
 	}
 
-	computers = computerService.getAllByPage(page);
+	computers = computerService.getComputerBySearch(page, inputSearch);
 	computers.stream().forEach(computer -> computersDto.add(ComputerDTOMapper.mapComputertoDTO(computer)));
 
 	request.setAttribute("nbComputers", nbComputers);
 	request.setAttribute("currentPage", page.getCurrentPage());
 	request.setAttribute("totalPages", nbPages);
 	request.setAttribute("lineNumber", page.getRows());
+	request.setAttribute("search", inputSearch);
 	request.setAttribute("ListComputers", computersDto);
 	this.getServletContext().getRequestDispatcher("/WEB-INF/views/listComputers.jsp").forward(request, response);
     }

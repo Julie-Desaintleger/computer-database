@@ -45,4 +45,11 @@ public class ComputerService {
 	return computerDAO.getByPage(page);
     }
 
+    public List<Computer> getComputerBySearch(Page page, String research) {
+	return computerDAO.getBySearch(page, research);
+    }
+
+    public int countComputers(String research) {
+	return computerDAO.count(research);
+    }
 }
