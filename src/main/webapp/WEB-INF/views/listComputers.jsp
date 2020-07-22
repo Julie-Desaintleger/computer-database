@@ -31,9 +31,9 @@
 			<div class="pull-left">
 				<form id="searchForm" action="#" method="GET" class="form-inline">
 					<input type="search" id="searchbox" name="search"
-						class="form-control" value="<c:out value="${param.search}"/>" placeholder="Search name" /> <input
-						type="submit" id="searchsubmit" value="Filter by name"
-						class="btn btn-primary" />
+						class="form-control" value="<c:out value="${param.search}"/>"
+						placeholder="Search name" /> <input type="submit"
+						id="searchsubmit" value="Filter by name" class="btn btn-primary" />
 				</form>
 			</div>
 			<div class="pull-right">
@@ -63,12 +63,29 @@
 						</span></th>
 						<!-- Variable declarations for passing labels as parameters -->
 						<th>Computer id</th>
-						<th>Computer name</th>
-						<th>Introduced date</th>
+						<th>Computer name <a
+							href="listComputers?order=computer.name ASC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-alphabet"></i></a> <a
+							href="listComputers?order=computer.name DESC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a></th>
+
+						<th>Introduced date <a
+							href="listComputers?order=introduced ASC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-attributes"></i></a> <a
+							href="listComputers?order=introduced DESC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-attributes-alt"></i></a></th>
 						<!-- Table header for Discontinued Date -->
-						<th>Discontinued date</th>
+						<th>Discontinued date <a
+							href="listComputers?order=discontinued ASC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-attributes"></i></a> <a
+							href="listComputers?order=discontinued DESC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-attributes-alt"></i></a></th>
 						<!-- Table header for Company -->
-						<th>Company</th>
+						<th>Company <a
+							href="listComputers?order=company.name ASC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-alphabet"></i></a> <a
+							href="listComputers?order=company.name DESC&search=${search}"><i
+								class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a></th>
 
 					</tr>
 				</thead>
@@ -99,7 +116,7 @@
 				<%--For displaying Previous link except for the 1st page --%>
 				<li><c:if test="${currentPage != 1}">
 						<button
-							onclick="window.location.href='listComputers?pageNumber=${currentPage - 1}&search=${search}'"
+							onclick="window.location.href='listComputers?pageNumber=${currentPage - 1}&search=${search}&order=${order}'"
 							aria-label="Previous">
 							<span aria-hidden="true">&laquo;</span>
 						</button>
@@ -108,13 +125,13 @@
 							<c:choose>
 								<c:when test="${i==0}">
 									<button type="button" class="btn active"
-										onclick="window.location.href='listComputers?pageNumber=${currentPage}&search=${search}'">
+										onclick="window.location.href='listComputers?pageNumber=${currentPage}&search=${search}&order=${order}'">
 										<c:out value="${currentPage}"></c:out>
 									</button>
 								</c:when>
 								<c:otherwise>
 									<button type="button" class="btn btn-default"
-										onclick="window.location.href='listComputers?pageNumber=${currentPage+i}&search=${search}'">
+										onclick="window.location.href='listComputers?pageNumber=${currentPage+i}&search=${search}&order=${order}'">
 										<c:out value="${currentPage+i}"></c:out>
 									</button>
 								</c:otherwise>
@@ -123,7 +140,7 @@
 					</c:forEach> <%--For displaying Next link except for the last page --%> <c:if
 						test="${currentPage != totalPages}">
 						<button
-							onclick="window.location.href='listComputers?pageNumber=${currentPage + 1}&search=${search}'"
+							onclick="window.location.href='listComputers?pageNumber=${currentPage + 1}&search=${search}&order=${order}'"
 							aria-label="Next">
 							<span aria-hidden="true">&raquo;</span>
 						</button>
@@ -134,31 +151,31 @@
 				<c:choose>
 					<c:when test="${ lineNumber eq 10 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=10&search=${search}'">10</button>
+							onclick="window.location.href='listComputers?lineNumber=10&search=${search}&order=${order}'">10</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=10&search=${search}'">10</button>
+							onclick="window.location.href='listComputers?lineNumber=10&search=${search}&order=${order}'">10</button>
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
 					<c:when test="${ lineNumber eq 50 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=50&search=${search}'">50</button>
+							onclick="window.location.href='listComputers?lineNumber=50&search=${search}&order=${order}'">50</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=50&search=${search}'">50</button>
+							onclick="window.location.href='listComputers?lineNumber=50&search=${search}&order=${order}'">50</button>
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
 					<c:when test="${ lineNumber eq 100 }">
 						<button type="button" class="btn active"
-							onclick="window.location.href='listComputers?lineNumber=100&search=${search}'">100</button>
+							onclick="window.location.href='listComputers?lineNumber=100&search=${search}&order=${order}'">100</button>
 					</c:when>
 					<c:otherwise>
 						<button type="button" class="btn btn-default"
-							onclick="window.location.href='listComputers?lineNumber=100&search=${search}'">100</button>
+							onclick="window.location.href='listComputers?lineNumber=100&search=${search}&order=${order}'">100</button>
 					</c:otherwise>
 				</c:choose>
 			</div>

@@ -45,8 +45,8 @@ public class ComputerService {
 	return computerDAO.getByPage(page);
     }
 
-    public List<Computer> getComputerBySearch(Page page, String research) {
-	return computerDAO.getBySearch(page, research);
+    public List<Computer> getComputerBySearchOrdered(Page page, String research, String order) {
+	return computerDAO.getBySearchOrdered(page, research, order);
     }
 
     public int countComputers(String research) {

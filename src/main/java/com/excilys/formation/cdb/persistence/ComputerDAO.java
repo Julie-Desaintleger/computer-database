@@ -29,9 +29,9 @@ public class ComputerDAO {
     private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE computer.id = ?";
     private static final String DELETE = "DELETE FROM computer where id = ?";
-    private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY id LIMIT ? OFFSET ?";
+    private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY %s LIMIT ? OFFSET ?";
     private static final String SELECT_BY_SEARCH = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name"
-	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY id LIMIT ? OFFSET ?";
+	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY %s LIMIT ? OFFSET ?";
 
     /**
      * L'instance du singleton de ComputerDAO.
@@ -260,25 +260,31 @@ public class ComputerDAO {
     }
 
     /**
-     * Liste les ordinateurs à rechercher.
+     * Liste les ordinateurs à rechercher selon un ordre
      * 
      * @param p        pour la pagination
-     * @param research le pattern pour l'ordinateur à rechercher.
+     * @param research le pattern pour la recherche sur le nom de l'ordinateur ou
+     *                 sur le nom de la compagnie
+     * @param order    l'ordre à appliquer
      * @return la liste des ordinateurs recherchés
      */
-    public List<Computer> getBySearch(Page p, String research) {
+    public List<Computer> getBySearchOrdered(Page p, String research, String order) {
 	List<Computer> computers = new ArrayList<Computer>();
 	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
 	try (Connection connection = ConnectHikari.getConnection()) {
-
+	    if (order == null || order.isEmpty()) {
+		order = "computer.id";
+	    }
 	    if (research == null || research.isEmpty()) {
-		statement = connection.prepareStatement(SELECT_WITH_PAGE);
+		String orderChoice = String.format(SELECT_WITH_PAGE, order);
+		statement = connection.prepareStatement(orderChoice);
 		statement.setInt(1, p.getRows());
 		statement.setInt(2, p.getFirstLine());
 	    } else {
-		statement = connection.prepareStatement(SELECT_BY_SEARCH);
+		String orderChoice = String.format(SELECT_BY_SEARCH, order);
+		statement = connection.prepareStatement(orderChoice);
 		statement.setString(1, "%" + research + "%");
 		statement.setString(2, "%" + research + "%");
 		statement.setInt(3, p.getRows());
