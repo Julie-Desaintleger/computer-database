@@ -33,4 +33,8 @@ public class CompanyService {
 	return companyDAO.findById(id);
     }
 
+    public void deleteByCompany(Long idCompany) {
+	companyDAO.deleteByCompany(idCompany);
+    }
+
 }

@@ -89,6 +89,31 @@ public class Cli {
     }
 
     /**
+     * Récupère un entier tapé par l'utilisateur pour l'identifiant d'une compagnie
+     * 
+     * @return l'identifiant d'une compagnie
+     */
+    private static Long getIdCompany() {
+	System.out.println("Entrez un identifiant d'une compagnie : ");
+	String reply;
+	Long idCompany = null;
+	boolean isCorrectId = false;
+
+	while (!isCorrectId) {
+	    reply = sc.nextLine();
+
+	    try {
+		idCompany = Long.parseLong(reply);
+		isCorrectId = true;
+		System.out.println("id Company : " + idCompany);
+	    } catch (Exception e) {
+		logger.error("Entrez un nombre..." + e.getMessage());
+	    }
+	}
+	return idCompany;
+    }
+
+    /**
      * Vérification sur l'entier saisie appartient bien a un ordinateur en base
      * 
      * @param idComputer l'identifiant d'ordinateur à chercher
@@ -108,6 +133,30 @@ public class Cli {
 	    }
 	} else {
 	    logger.error("Erreur récupération sur l'id");
+	}
+	return isPresent;
+    }
+
+    /**
+     * Vérification sur l'entier saisie appartient bien à une compagnie en base
+     * 
+     * @param idCompany l'identifiant d'une compagnie à chercher
+     * @return true si l'identifiant existe, sinon false.
+     */
+    private static boolean checkIdCompany(Long idCompany) {
+	boolean isPresent = false;
+
+	if (idCompany != null) {
+	    Company c = companyService.getById(idCompany);
+
+	    if (c != null) {
+		isPresent = true;
+		System.out.println("L'id correspond à la compagnie suivante : \n" + c.toString());
+	    } else {
+		logger.error("L'id ne correspond à aucune compagnie");
+	    }
+	} else {
+	    logger.error("Erreur récupération sur l'id compagnie");
 	}
 	return isPresent;
     }
@@ -201,6 +250,18 @@ public class Cli {
     }
 
     /**
+     * Suppression d'une compagnie avec les ordinateurs associés à cette compagnie.
+     */
+    public static void deleteCompany() {
+	Long idCompany = getIdCompany();
+
+	if (checkIdCompany(idCompany)) {
+	    companyService.deleteByCompany(idCompany);
+	    System.out.println("La compagnie a bien été supprimé ainsi que les ordinateurs associés");
+	}
+    }
+
+    /**
      * Pagination de l'affichage
      * 
      * @param newPage
@@ -264,6 +325,7 @@ public class Cli {
 	System.out.println("new - Création d'un ordinateur");
 	System.out.println("upd - Mise à jour d'un ordinateur");
 	System.out.println("del - Suppression d'un ordinateur");
+	System.out.println("delc - Suppression d'une compagnie");
 	System.out.println("help - Pour afficher les commandes");
 	System.out.println("q - Quitter");
     }
@@ -314,6 +376,10 @@ public class Cli {
 	    case ("del"):
 		System.out.println("Suppression de l'ordinateur :");
 		deleteComputer();
+		break;
+	    case ("delc"):
+		System.out.println("Suppression de la compagnie :");
+		deleteCompany();
 		break;
 	    case ("help"):
 		cmd();
