@@ -20,7 +20,7 @@ public class TestCompanyDAO {
     public void testCountAll() {
 	int nb_company_db_with_sql = CompanyDAO.getInstance().countAll();
 
-	assertTrue(nb_company_db_with_sql == 4);
+	assertTrue(nb_company_db_with_sql == 3);
     }
 
     @Test
@@ -28,8 +28,7 @@ public class TestCompanyDAO {
 	CompanyDAO companyDao = CompanyDAO.getInstance();
 	List<Company> companyList = companyDao.getAll();
 	List<Company> companyListToCheck = Arrays.asList(new Company(Long.valueOf(1), "Apple Inc."),
-		new Company(Long.valueOf(2), "Nokia"), new Company(Long.valueOf(3), "ASUS"),
-		new Company(Long.valueOf(4), "Hewlett-Packard"));
+		new Company(Long.valueOf(2), "Nokia"), new Company(Long.valueOf(3), "ASUS"));
 
 	assertEquals(companyList.toString(), companyListToCheck.toString());
     }
