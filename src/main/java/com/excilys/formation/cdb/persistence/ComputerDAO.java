@@ -137,8 +137,7 @@ public class ComputerDAO {
 		Date discontinuedDate = computer.getDiscontinued() == null ? null
 			: Date.valueOf(computer.getDiscontinued());
 		statement.setDate(3, discontinuedDate);
-		// cas pas gérer si, la compagnie n'existe pas en base
-		if (computer.getCompany().getId() != 0L) {
+		if (computer.getCompany() != null) {
 		    statement.setLong(4, computer.getCompany().getId());
 		} else {
 		    statement.setNull(4, Types.BIGINT);
@@ -173,10 +172,10 @@ public class ComputerDAO {
 		}
 		statement.setDate(2, introducedDate);
 		statement.setDate(3, discontinuedDate);
-		if (computer.getCompany().getId() == null || computer.getCompany().getId() == 0L) {
-		    statement.setNull(4, Types.BIGINT);
-		} else {
+		if (computer.getCompany() != null) {
 		    statement.setLong(4, computer.getCompany().getId());
+		} else {
+		    statement.setNull(4, Types.BIGINT);
 		}
 		statement.setLong(5, computer.getId());
 		statement.executeUpdate();
@@ -184,6 +183,7 @@ public class ComputerDAO {
 		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    }
 	}
+
     }
 
     /**
@@ -215,7 +215,9 @@ public class ComputerDAO {
 	ResultSet resultSet = null;
 
 	try (Connection connection = ConnectHikari.getConnection()) {
-	    statement = connection.prepareStatement(SELECT_WITH_PAGE);
+	    String order = "computer.id";
+	    String orderChoice = String.format(SELECT_WITH_PAGE, order);
+	    statement = connection.prepareStatement(orderChoice);
 
 	    statement.setInt(1, p.getRows());
 	    statement.setInt(2, p.getFirstLine());
