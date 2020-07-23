@@ -6,7 +6,7 @@
 
 	<groupId>com.excilys.formation.cdb</groupId>
 	<artifactId>computer-database</artifactId>
-	<version>1.0</version>
+	<version>1.5</version>
 	<packaging>war</packaging>
 	<name>computer-database</name>
 	<properties>
