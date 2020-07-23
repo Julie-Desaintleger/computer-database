@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.excilys.formation.cdb.model.Company;
+import com.excilys.formation.cdb.model.Computer;
 
 public class TestCompanyDAO {
 
@@ -43,4 +44,14 @@ public class TestCompanyDAO {
 	assertNotEquals(companyList.toString(), companyListToCheck.toString());
     }
 
+    @Test
+    public void testDeleteByCompany() {
+	CompanyDAO companyDao = CompanyDAO.getInstance();
+	ComputerDAO computerDao = ComputerDAO.getInstance();
+	companyDao.deleteByCompany(Long.valueOf(4));
+	List<Computer> computers = computerDao.getAll();
+
+	assertEquals(7, computers.size());
+	assertEquals(3, companyDao.countAll());
+    }
 }

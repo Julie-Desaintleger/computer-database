@@ -23,6 +23,8 @@ public class CompanyDAO {
     private static final String SELECT_BY_ID = "SELECT id, name FROM company WHERE company.id = ?";
     private static final String COUNT = "SELECT COUNT(id) AS nb_company FROM company";
     private static final String SELECT_WITH_PAGE = "SELECT id, name FROM company ORDER BY id LIMIT ? OFFSET ?";
+    private static final String DELETE = "DELETE FROM company where company.id = ?";
+    private static final String DELETE_COMPUTERS = "DELETE FROM computer WHERE company_id = ?";
 
     /**
      * L'instance du singleton de CompanyDAO.
@@ -130,6 +132,39 @@ public class CompanyDAO {
 	    }
 	}
 	return company;
+    }
+
+    /**
+     * Supprime une compagnie et les ordinateurs associés à cette compagnie.
+     * 
+     * @param id l'identifiant d'une compagnie
+     */
+    public void deleteByCompany(Long id) {
+	Company company = findById(id);
+	if (company != null) {
+	    try (Connection connection = ConnectHikari.getConnection()) {
+		connection.setAutoCommit(false);
+		// DELETE = "DELETE FROM company where company.id = ?";
+		try (PreparedStatement statement = connection.prepareStatement(DELETE)) {
+		    statement.setLong(1, id);
+		    // DELETE_COMPUTERS = "DELETE FROM computer WHERE company_id = ?";
+		    try (PreparedStatement statementJoin = connection.prepareStatement(DELETE_COMPUTERS)) {
+			statementJoin.setLong(1, id);
+			int rowCount = statementJoin.executeUpdate();
+			logger.info("Enregistrements d'ordinateurs correctement supprimés, nb enregistrements : "
+				+ rowCount);
+			statement.executeUpdate();
+			connection.commit();
+		    }
+		} catch (SQLException ex) {
+		    connection.rollback();
+		}
+	    } catch (SQLException e) {
+		logger.error("Erreur DAO -> supprimer une compagnie avec les ordinateurs :" + e);
+	    }
+
+	}
+
     }
 
 }
