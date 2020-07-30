@@ -336,8 +336,8 @@ public class Cli {
     public static void start() {
 	cmd();
 
-	// FIXME companyService = CompanyService.getInstance();
-	// FIXME computerService = ComputerService.getInstance();
+	companyService = CompanyService.getInstance();
+	computerService = ComputerService.getInstance();
 
 	select_option();
     }
