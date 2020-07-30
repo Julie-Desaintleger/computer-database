@@ -2,22 +2,23 @@ package com.excilys.formation.cdb.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.ComputerDAO;
 
+@Service
 public class ComputerService {
-    private static ComputerService computerService;
-    private static ComputerDAO computerDAO = ComputerDAO.getInstance();
+    private ComputerDAO computerDAO;
 
-    public static ComputerService getInstance() {
-	if (computerService == null) {
-	    computerService = new ComputerService();
-	}
-	return computerService;
+    @Autowired
+    public ComputerService(ComputerDAO computerDAO) {
+	this.computerDAO = computerDAO;
     }
 
-    public static List<Computer> getAll() {
+    public List<Computer> getAll() {
 	return computerDAO.getAll();
     }
 

@@ -11,16 +11,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
 
+@Repository
 public class ComputerDAO {
-    private static ComputerDAO computerDAO;
-    private ConnectHikari connect = ConnectHikari.getInstance();
-    private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
-
     private static final String SELECT_ALL = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id ORDER BY computer.id";
     private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
     private static final String COUNT_SEARCH = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company_id = company.id "
@@ -33,17 +31,7 @@ public class ComputerDAO {
     private static final String SELECT_BY_SEARCH = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name"
 	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY %s LIMIT ? OFFSET ?";
 
-    /**
-     * L'instance du singleton de ComputerDAO.
-     * 
-     * @return l'instance de OrdinateurDAO
-     */
-    public static ComputerDAO getInstance() {
-	if (computerDAO == null) {
-	    computerDAO = new ComputerDAO();
-	}
-	return computerDAO;
-    }
+    private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
     /**
      * Lister tous les ordinateurs
@@ -52,12 +40,10 @@ public class ComputerDAO {
      */
     public List<Computer> getAll() {
 	List<Computer> computerList = new ArrayList<Computer>();
-	PreparedStatement statement = null;
-	ResultSet resultSet = null;
 
-	try (Connection connection = ConnectHikari.getConnection()) {
-	    statement = connection.prepareStatement(SELECT_ALL);
-	    resultSet = statement.executeQuery();
+	try (Connection connection = DataSource.getConnection();
+		PreparedStatement preparedStat = connection.prepareStatement(SELECT_ALL);
+		ResultSet resultSet = preparedStat.executeQuery()) {
 
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
@@ -76,11 +62,11 @@ public class ComputerDAO {
      */
     public int countAll() {
 	int result = 0;
-	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
-	try (Connection connection = ConnectHikari.getConnection()) {
-	    statement = connection.prepareStatement(COUNT);
+	try (Connection connection = DataSource.getConnection();
+		PreparedStatement statement = connection.prepareStatement(COUNT)) {
+
 	    resultSet = statement.executeQuery();
 
 	    while (resultSet.next()) {
@@ -101,18 +87,18 @@ public class ComputerDAO {
      */
     public Computer findById(Long id) {
 	Computer computer = null;
-	PreparedStatement statement = null;
 	ResultSet resultSet = null;
 
 	if (id != null) {
-	    try (Connection connection = ConnectHikari.getConnection()) {
-		statement = connection.prepareStatement(SELECT_BY_ID);
-		statement.setLong(1, id);
-		resultSet = statement.executeQuery();
+	    try (Connection connection = DataSource.getConnection();
+		    PreparedStatement preparedStat = connection.prepareStatement(SELECT_BY_ID)) {
+		preparedStat.setLong(1, id);
+		resultSet = preparedStat.executeQuery();
 
 		while (resultSet.next()) {
 		    computer = ComputerMapper.map(resultSet);
 		}
+		resultSet.close();
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> Ordinateur par id : " + e.getMessage());
 	    }
@@ -126,23 +112,22 @@ public class ComputerDAO {
      * @param computer l'ordinateur à insérer en base
      */
     public void create(Computer computer) {
-	PreparedStatement statement = null;
 
 	if (computer != null) {
-	    try (Connection connection = ConnectHikari.getConnection()) {
-		statement = connection.prepareStatement(INSERT);
-		statement.setString(1, computer.getName());
+	    try (Connection connection = DataSource.getConnection();
+		    PreparedStatement preparedStat = connection.prepareStatement(INSERT)) {
+		preparedStat.setString(1, computer.getName());
 		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
-		statement.setDate(2, introducedDate);
+		preparedStat.setDate(2, introducedDate);
 		Date discontinuedDate = computer.getDiscontinued() == null ? null
 			: Date.valueOf(computer.getDiscontinued());
-		statement.setDate(3, discontinuedDate);
+		preparedStat.setDate(3, discontinuedDate);
 		if (computer.getCompany() != null) {
-		    statement.setLong(4, computer.getCompany().getId());
+		    preparedStat.setLong(4, computer.getCompany().getId());
 		} else {
-		    statement.setNull(4, Types.BIGINT);
+		    preparedStat.setNull(4, Types.BIGINT);
 		}
-		statement.execute();
+		preparedStat.executeUpdate();
 	    } catch (SQLException e) {
 		logger.error(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
@@ -156,12 +141,10 @@ public class ComputerDAO {
      * @param computer l'ordinateur à mettre à jour en base
      */
     public void update(Computer computer) {
-	PreparedStatement statement = null;
-
 	if (computer != null) {
-	    try (Connection connection = ConnectHikari.getConnection()) {
-		statement = connection.prepareStatement(UPDATE);
-		statement.setString(1, computer.getName());
+	    try (Connection connection = DataSource.getConnection();
+		    PreparedStatement preparedStat = connection.prepareStatement(UPDATE)) {
+		preparedStat.setString(1, computer.getName());
 		Date introducedDate = null;
 		Date discontinuedDate = null;
 		if (computer.getIntroduced() != null) {
@@ -170,15 +153,15 @@ public class ComputerDAO {
 		if (computer.getDiscontinued() != null) {
 		    discontinuedDate = Date.valueOf(computer.getDiscontinued());
 		}
-		statement.setDate(2, introducedDate);
-		statement.setDate(3, discontinuedDate);
+		preparedStat.setDate(2, introducedDate);
+		preparedStat.setDate(3, discontinuedDate);
 		if (computer.getCompany() != null) {
-		    statement.setLong(4, computer.getCompany().getId());
+		    preparedStat.setLong(4, computer.getCompany().getId());
 		} else {
-		    statement.setNull(4, Types.BIGINT);
+		    preparedStat.setNull(4, Types.BIGINT);
 		}
-		statement.setLong(5, computer.getId());
-		statement.executeUpdate();
+		preparedStat.setLong(5, computer.getId());
+		preparedStat.executeUpdate();
 	    } catch (SQLException e) {
 		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
 	    }
@@ -192,12 +175,10 @@ public class ComputerDAO {
      * @param id l'identifiant de l'ordinateur à supprimer en base
      */
     public void delete(Long id) {
-	PreparedStatement statement = null;
-
-	try (Connection connection = ConnectHikari.getConnection()) {
-	    statement = connection.prepareStatement(DELETE);
-	    statement.setLong(1, id);
-	    statement.execute();
+	try (Connection connection = DataSource.getConnection();
+		PreparedStatement preparedStat = connection.prepareStatement(DELETE)) {
+	    preparedStat.setLong(1, id);
+	    preparedStat.execute();
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> suppression ordinateur" + e.getMessage());
 	}
@@ -211,23 +192,23 @@ public class ComputerDAO {
      */
     public List<Computer> getByPage(Page p) {
 	List<Computer> computers = new ArrayList<Computer>();
-	PreparedStatement statement = null;
 	ResultSet resultSet = null;
+	String order = "computer.id";
+	String orderChoice = String.format(SELECT_WITH_PAGE, order);
 
-	try (Connection connection = ConnectHikari.getConnection()) {
-	    String order = "computer.id";
-	    String orderChoice = String.format(SELECT_WITH_PAGE, order);
-	    statement = connection.prepareStatement(orderChoice);
+	try (Connection connection = DataSource.getConnection();
+		PreparedStatement preparedStat = connection.prepareStatement(orderChoice)) {
 
-	    statement.setInt(1, p.getRows());
-	    statement.setInt(2, p.getFirstLine());
+	    preparedStat.setInt(1, p.getRows());
+	    preparedStat.setInt(2, p.getFirstLine());
 
-	    resultSet = statement.executeQuery();
+	    resultSet = preparedStat.executeQuery();
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
 		computers.add(computer);
 
 	    }
+	    preparedStat.close();
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
 	}
@@ -243,18 +224,19 @@ public class ComputerDAO {
      */
     public int count(String search) {
 	int total = 0;
-	try (Connection connect = ConnectHikari.getConnection()) {
-	    PreparedStatement statement;
+	try (Connection connection = DataSource.getConnection();) {
+	    PreparedStatement preparedStat;
 	    if (search == null) {
-		statement = connect.prepareStatement(COUNT);
+		preparedStat = connection.prepareStatement(COUNT);
 	    } else {
-		statement = connect.prepareStatement(COUNT_SEARCH);
-		statement.setString(1, "%" + search + "%");
-		statement.setString(2, "%" + search + "%");
+		preparedStat = connection.prepareStatement(COUNT_SEARCH);
+		preparedStat.setString(1, "%" + search + "%");
+		preparedStat.setString(2, "%" + search + "%");
 	    }
-	    ResultSet result = statement.executeQuery();
+	    ResultSet result = preparedStat.executeQuery();
 	    result.next();
 	    total = result.getInt(1);
+	    preparedStat.close();
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> computer tous les ordinateurs à rechercher", e);
 	}
@@ -272,32 +254,34 @@ public class ComputerDAO {
      */
     public List<Computer> getBySearchOrdered(Page p, String research, String order) {
 	List<Computer> computers = new ArrayList<Computer>();
-	PreparedStatement statement = null;
+	PreparedStatement preparedStat = null;
 	ResultSet resultSet = null;
 
-	try (Connection connection = ConnectHikari.getConnection()) {
+	try (Connection connection = DataSource.getConnection();) {
 	    if (order == null || order.isEmpty()) {
 		order = "computer.id";
 	    }
 	    if (research == null || research.isEmpty()) {
 		String orderChoice = String.format(SELECT_WITH_PAGE, order);
-		statement = connection.prepareStatement(orderChoice);
-		statement.setInt(1, p.getRows());
-		statement.setInt(2, p.getFirstLine());
+		preparedStat = connection.prepareStatement(orderChoice);
+		preparedStat.setInt(1, p.getRows());
+		preparedStat.setInt(2, p.getFirstLine());
 	    } else {
 		String orderChoice = String.format(SELECT_BY_SEARCH, order);
-		statement = connection.prepareStatement(orderChoice);
-		statement.setString(1, "%" + research + "%");
-		statement.setString(2, "%" + research + "%");
-		statement.setInt(3, p.getRows());
-		statement.setInt(4, p.getFirstLine());
+		preparedStat = connection.prepareStatement(orderChoice);
+		preparedStat.setString(1, "%" + research + "%");
+		preparedStat.setString(2, "%" + research + "%");
+		preparedStat.setInt(3, p.getRows());
+		preparedStat.setInt(4, p.getFirstLine());
 	    }
 
-	    resultSet = statement.executeQuery();
+	    resultSet = preparedStat.executeQuery();
 	    while (resultSet.next()) {
 		Computer computer = ComputerMapper.map(resultSet);
 		computers.add(computer);
 	    }
+	    preparedStat.close();
+	    resultSet.close();
 	} catch (SQLException e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs à rechercher de la page : " + p.getCurrentPage()
 		    + e.getMessage());
