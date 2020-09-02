@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.cdb.dto.CompanyDTO;
 import com.excilys.formation.cdb.dto.ComputerDTO;
@@ -33,10 +36,24 @@ import com.excilys.formation.cdb.validator.ComputerValidator;
  */
 @WebServlet("/editComputer")
 public class EditComputerServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
-    private static CompanyService companyService = CompanyService.getInstance();
-    private static ComputerService computerService = ComputerService.getInstance();
+
+    @Autowired
+    private CompanyService companyService;
+
+    @Autowired
+    private ComputerService computerService;
+
+    @Override
+    public void init(ServletConfig config) {
+	try {
+	    super.init(config);
+	} catch (ServletException e) {
+	    logger.error("Error during initalization in EditComputer ", e);
+	}
+	SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

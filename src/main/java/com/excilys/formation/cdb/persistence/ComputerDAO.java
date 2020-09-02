@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,12 +121,12 @@ public class ComputerDAO {
 		Date discontinuedDate = computer.getDiscontinued() == null ? null
 			: Date.valueOf(computer.getDiscontinued());
 		preparedStat.setDate(3, discontinuedDate);
-		if (computer.getCompany() != null) {
-		    preparedStat.setLong(4, computer.getCompany().getId());
+		if (computer.getCompany() == null || computer.getCompany().getId() == 0) {
+		    preparedStat.setNull(4, java.sql.Types.BIGINT);
 		} else {
-		    preparedStat.setNull(4, Types.BIGINT);
+		    preparedStat.setLong(4, computer.getCompany().getId());
 		}
-		preparedStat.executeUpdate();
+		preparedStat.execute();
 	    } catch (SQLException e) {
 		logger.error(
 			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
@@ -155,10 +154,10 @@ public class ComputerDAO {
 		}
 		preparedStat.setDate(2, introducedDate);
 		preparedStat.setDate(3, discontinuedDate);
-		if (computer.getCompany() != null) {
-		    preparedStat.setLong(4, computer.getCompany().getId());
+		if (computer.getCompany() == null || computer.getCompany().getId() == 0) {
+		    preparedStat.setNull(4, java.sql.Types.BIGINT);
 		} else {
-		    preparedStat.setNull(4, Types.BIGINT);
+		    preparedStat.setLong(4, computer.getCompany().getId());
 		}
 		preparedStat.setLong(5, computer.getId());
 		preparedStat.executeUpdate();
