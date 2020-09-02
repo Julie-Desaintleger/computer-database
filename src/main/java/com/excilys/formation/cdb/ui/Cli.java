@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
@@ -14,16 +16,20 @@ import com.excilys.formation.cdb.model.Page;
 import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 
+@Component
 public class Cli {
     private static Scanner sc;
-    private static CompanyService companyService;
-    private static ComputerService computerService;
     private final static Logger logger = LoggerFactory.getLogger(Cli.class);
+
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    ComputerService computerService;
 
     /**
      * Liste toutes les entreprises dans la base
      */
-    public static void listAllCompanies() {
+    public void listAllCompanies() {
 	boolean isCompleted = false;
 	Page newPage = new Page();
 	int nbCompanies = companyService.countAll();
@@ -38,7 +44,7 @@ public class Cli {
     /**
      * Liste tous les ordinateurs dans la base
      */
-    public static void listAllComputers() {
+    public void listAllComputers() {
 	boolean isCompleted = false;
 	Page newPage = new Page();
 	int nbComputer = computerService.countAll();
@@ -53,7 +59,7 @@ public class Cli {
     /**
      * Affiche les détails d'un ordinateur.
      */
-    public static void detailsComputer() {
+    public void detailsComputer() {
 	Long idComputer = getId();
 
 	if (idComputer != null) {
@@ -119,7 +125,7 @@ public class Cli {
      * @param idComputer l'identifiant d'ordinateur à chercher
      * @return true si l'identifiant existe, sinon false.
      */
-    private static boolean checkId(Long idComputer) {
+    private boolean checkId(Long idComputer) {
 	boolean isPresent = false;
 
 	if (idComputer != null) {
@@ -143,7 +149,7 @@ public class Cli {
      * @param idCompany l'identifiant d'une compagnie à chercher
      * @return true si l'identifiant existe, sinon false.
      */
-    private static boolean checkIdCompany(Long idCompany) {
+    private boolean checkIdCompany(Long idCompany) {
 	boolean isPresent = false;
 
 	if (idCompany != null) {
@@ -164,7 +170,7 @@ public class Cli {
     /**
      * Création d'un nouvel ordinateur
      */
-    public static void createComputer() {
+    public void createComputer() {
 	Computer newComputer = getInfos();
 
 	if (newComputer != null) {
@@ -177,7 +183,7 @@ public class Cli {
      * 
      * @return les informations sur l'ordinateur
      */
-    private static Computer getInfos() {
+    private Computer getInfos() {
 	LocalDate dateContinued = null;
 	LocalDate dateDiscontinued = null;
 	Long idComputer = null;
@@ -225,7 +231,7 @@ public class Cli {
     /**
      * Mise à jour d'un ordinateur
      */
-    public static void updateComputer() {
+    public void updateComputer() {
 	Long idComputer = getId();
 
 	if (checkId(idComputer)) {
@@ -240,7 +246,7 @@ public class Cli {
     /**
      * Suppression d'un ordinateur
      */
-    public static void deleteComputer() {
+    public void deleteComputer() {
 	Long idComputer = getId();
 
 	if (checkId(idComputer)) {
@@ -252,7 +258,7 @@ public class Cli {
     /**
      * Suppression d'une compagnie avec les ordinateurs associés à cette compagnie.
      */
-    public static void deleteCompany() {
+    public void deleteCompany() {
 	Long idCompany = getIdCompany();
 
 	if (checkIdCompany(idCompany)) {
@@ -333,11 +339,8 @@ public class Cli {
     /**
      * Démarre le service CLI
      */
-    public static void start() {
+    public void start() {
 	cmd();
-
-	companyService = CompanyService.getInstance();
-	computerService = ComputerService.getInstance();
 
 	select_option();
     }
@@ -345,7 +348,7 @@ public class Cli {
     /**
      * Traitement pour les entrées du client
      */
-    public static void select_option() {
+    public void select_option() {
 	boolean isContinue = true;
 	sc = new Scanner(System.in);
 	String answer;

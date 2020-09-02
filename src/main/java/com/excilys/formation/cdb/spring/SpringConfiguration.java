@@ -7,7 +7,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 @Configuration
-@ComponentScan(basePackages = { "com.excilys.formation.cdb.persistence", "com.excilys.formation.cdb.service" })
+@ComponentScan(basePackages = { "com.excilys.formation.cdb.ui", "com.excilys.formation.cdb.persistence",
+	"com.excilys.formation.cdb.service" })
 public class SpringConfiguration extends AbstractContextLoaderInitializer {
     @Override
     protected WebApplicationContext createRootApplicationContext() {
