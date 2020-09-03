@@ -130,16 +130,14 @@ public class EditComputerServlet extends HttpServlet {
 	    computerService.update(computer);
 	    result = "Computer updated with success.";
 	    logger.info("Update computer done");
+	    response.sendRedirect("/computer-database/listComputers");
 	} else {
 	    result = "Fail to update this computer.";
 	    logger.info("Update don't work");
-
+	    request.setAttribute("errors", errors);
+	    request.setAttribute("result", result);
+	    doGet(request, response);
 	}
-
-	request.setAttribute("errors", errors);
-	request.setAttribute("result", result);
-
-	doGet(request, response);
 
     }
 

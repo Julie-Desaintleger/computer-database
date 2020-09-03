@@ -114,16 +114,14 @@ public class AddComputerServlet extends HttpServlet {
 	    computerService.insert(computer);
 	    result = "Computer added with success.";
 	    logger.info("Insert computer done");
+	    response.sendRedirect("/computer-database/listComputers");
 	} else {
 	    result = "Fail to add this computer.";
 	    logger.info("Insert don't work");
-
+	    request.setAttribute("errors", errors);
+	    request.setAttribute("result", result);
+	    doGet(request, response);
 	}
-
-	request.setAttribute("errors", errors);
-	request.setAttribute("result", result);
-
-	doGet(request, response);
 
     }
 
