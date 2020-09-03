@@ -8,24 +8,34 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
+import com.excilys.formation.cdb.spring.SpringConfiguration;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = SpringConfiguration.class)
 public class TestCompanyDAO {
 
-    static CompanyDAO companyDao;
+    @Autowired
+    CompanyDAO companyDao;
+
+    @Autowired
+    ComputerDAO computerDao;
 
     @Test
     public void testCountAll() {
-	int nb_company_db_with_sql = CompanyDAO.getInstance().countAll();
+	int nb_company_db_with_sql = companyDao.countAll();
 
 	assertTrue(nb_company_db_with_sql == 3);
     }
 
     @Test
     public void testGetAll() {
-	CompanyDAO companyDao = CompanyDAO.getInstance();
 	List<Company> companyList = companyDao.getAll();
 	List<Company> companyListToCheck = Arrays.asList(new Company(Long.valueOf(1), "Apple Inc."),
 		new Company(Long.valueOf(2), "Nokia"), new Company(Long.valueOf(3), "ASUS"));
@@ -35,7 +45,6 @@ public class TestCompanyDAO {
 
     @Test
     public void testNotGetAll() {
-	CompanyDAO companyDao = CompanyDAO.getInstance();
 	List<Company> companyList = companyDao.getAll();
 	List<Company> companyListToCheck = Arrays.asList(new Company(Long.valueOf(1), "Apple Inc."),
 		new Company(Long.valueOf(2), "Nokia"));
@@ -45,8 +54,6 @@ public class TestCompanyDAO {
 
     @Test
     public void testDeleteByCompany() {
-	CompanyDAO companyDao = CompanyDAO.getInstance();
-	ComputerDAO computerDao = ComputerDAO.getInstance();
 	companyDao.deleteByCompany(Long.valueOf(4));
 	List<Computer> computers = computerDao.getAll();
 
