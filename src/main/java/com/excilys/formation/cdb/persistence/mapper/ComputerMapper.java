@@ -6,11 +6,12 @@ import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 
-public class ComputerMapper {
+public class ComputerMapper implements RowMapper<Computer> {
     private static final String ID_COMPUTER = "id";
     private static final String NAME = "name";
     private static final String INTRODUCED = "introduced";
@@ -24,9 +25,11 @@ public class ComputerMapper {
      * S'occupe de la conversion du résultat en entité
      * 
      * @param resultSet résultat de la requête
+     * @param rowNum    nombre de résultat de la requête
      * @return une entité Computer correspondante
      */
-    public static Computer map(ResultSet resultSet) {
+    @Override
+    public Computer mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 	Computer computer = new Computer();
 	try {
 	    Long id = resultSet.getLong(ID_COMPUTER);
