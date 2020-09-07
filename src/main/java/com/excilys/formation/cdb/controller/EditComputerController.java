@@ -1,22 +1,19 @@
-package com.excilys.formation.cdb.web;
+package com.excilys.formation.cdb.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.excilys.formation.cdb.dto.CompanyDTO;
 import com.excilys.formation.cdb.dto.ComputerDTO;
@@ -31,13 +28,10 @@ import com.excilys.formation.cdb.service.CompanyService;
 import com.excilys.formation.cdb.service.ComputerService;
 import com.excilys.formation.cdb.validator.ComputerValidator;
 
-/**
- * Servlet implementation class EditComputerServlet
- */
-@WebServlet("/editComputer")
-public class EditComputerServlet extends HttpServlet {
-    private static final long serialVersionUID = 2L;
-    private final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
+@Controller
+@RequestMapping("/editComputer")
+public class EditComputerController {
+    private static Logger logger = LoggerFactory.getLogger(EditComputerController.class);
 
     @Autowired
     private CompanyService companyService;
@@ -45,25 +39,12 @@ public class EditComputerServlet extends HttpServlet {
     @Autowired
     private ComputerService computerService;
 
-    @Override
-    public void init(ServletConfig config) {
-	try {
-	    super.init(config);
-	} catch (ServletException e) {
-	    logger.error("Error during initalization in EditComputer ", e);
-	}
-	SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
-    }
+    @GetMapping
+    public String get(Model model, @RequestParam String id) {
+	logger.info("GET editComputer");
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
 	Computer computer = new Computer();
 	ComputerDTO computerDTO = new ComputerDTO();
-	String id = request.getParameter("id");
 	if (id != null) {
 	    computer = computerService.getById(Long.parseLong(id));
 	}
@@ -78,18 +59,15 @@ public class EditComputerServlet extends HttpServlet {
 	List<CompanyDTO> companiesDTO = new ArrayList<CompanyDTO>();
 	companies.stream().forEach(company -> companiesDTO.add(CompanyDTOMapper.mapCompanytoDTO(company)));
 
-	request.setAttribute("ListCompanies", companiesDTO);
-	request.setAttribute("computer", computerDTO);
-	request.getRequestDispatcher("/WEB-INF/views/editComputer.jsp").forward(request, response);
+	model.addAttribute("ListCompanies", companiesDTO);
+	model.addAttribute("computer", computerDTO);
+	return "editComputer";
 
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
+    @PostMapping
+    public String post(Model model, @RequestParam String id, @RequestParam String computerName,
+	    @RequestParam String companyId, @RequestParam String introduced, @RequestParam String discontinued) {
 	ComputerDTO computerDTO = new ComputerDTO();
 	CompanyDTO companyDTO = new CompanyDTO();
 	Computer computer = new Computer();
@@ -98,17 +76,16 @@ public class EditComputerServlet extends HttpServlet {
 	String result;
 
 	try {
-	    ComputerValidator.validatorName(request.getParameter("computerName"));
-	    computerDTO.setName(request.getParameter("computerName"));
+	    ComputerValidator.validatorName(computerName);
+	    computerDTO.setName(computerName);
 	} catch (NameException e) {
 	    logger.error("computer name", e.getMessage());
 	    errors.put("computerName", e.getMessage());
 	}
 
-	if (request.getParameter("discontinued") != null) {
+	if (discontinued != null) {
 	    try {
-		ComputerValidator.validatorDate(request.getParameter("introduced"),
-			request.getParameter("discontinued"));
+		ComputerValidator.validatorDate(introduced, discontinued);
 	    } catch (DateDiscontinuedException e) {
 		logger.error("error with discontinued date", e.getMessage());
 		errors.put("dateDiscontinued", e.getMessage());
@@ -119,26 +96,22 @@ public class EditComputerServlet extends HttpServlet {
 	}
 
 	if (errors.isEmpty()) {
-	    computerDTO.setId(request.getParameter("id"));
-	    computerDTO.setIntroduced(request.getParameter("introduced"));
-	    computerDTO.setDiscontinued(request.getParameter("discontinued"));
-	    companyDTO.setId(request.getParameter("companyId"));
+	    computerDTO.setId(id);
+	    computerDTO.setIntroduced(introduced);
+	    computerDTO.setDiscontinued(discontinued);
+	    companyDTO.setId(companyId);
 	    computerDTO.setCompany(companyDTO);
-	    System.out.println(computerDTO);
 	    computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
-	    System.out.println(computer);
 	    computerService.update(computer);
 	    result = "Computer updated with success.";
 	    logger.info("Update computer done");
-	    response.sendRedirect("/computer-database/listComputers");
+	    return "redirect:/";
 	} else {
 	    result = "Fail to update this computer.";
 	    logger.info("Update don't work");
-	    request.setAttribute("errors", errors);
-	    request.setAttribute("result", result);
-	    doGet(request, response);
+	    model.addAttribute("errors", errors);
+	    model.addAttribute("result", result);
+	    return "editComputer";
 	}
-
     }
-
 }

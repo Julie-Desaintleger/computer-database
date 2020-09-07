@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.excilys.formation.cdb.config.AppConfig;
 import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.spring.SpringConfiguration;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = SpringConfiguration.class)
+@ContextConfiguration(classes = AppConfig.class)
 public class TestComputerDAO {
 
     @Autowired
