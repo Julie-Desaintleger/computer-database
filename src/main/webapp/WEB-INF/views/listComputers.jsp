@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,27 +20,37 @@
 		<div class="container">
 			<a class="navbar-brand" href="listComputers"> Application -
 				Computer Database </a>
+			<div class="pull-right align-self-center">
+				<a
+					href="listComputers?pageNumber=${currentPage}&search=${search}&order=${order}&lang=fr">fr</a>
+				| <a
+					href="listComputers?pageNumber=${currentPage}&search=${search}&order=${order}&lang=en">en</a>
+
+			</div>
 		</div>
 	</header>
 
 	<section id="main">
 		<h1 id="homeTitle">
 			<c:out value="${nbComputers}" />
-			Computers found
+			<spring:message code="search.number" />
 		</h1>
 		<div id="actions" class="form-horizontal">
 			<div class="pull-left">
 				<form id="searchForm" action="#" method="GET" class="form-inline">
 					<input type="search" id="searchbox" name="search"
 						class="form-control" value="<c:out value="${param.search}"/>"
-						placeholder="Search name" /> <input type="submit"
-						id="searchsubmit" value="Filter by name" class="btn btn-primary" />
+						placeholder='<spring:message code="button.search" />' /> <input
+						type="submit" id="searchsubmit"
+						value="<spring:message code="button.search" />"
+						class="btn btn-primary" />
 				</form>
 			</div>
 			<div class="pull-right">
-				<a class="btn btn-success" id="addComputer" href="addComputer">Add
-					Computer</a> <a class="btn btn-default" id="editComputer" href="#"
-					onclick="$.fn.toggleEditMode();">Edit</a>
+				<a class="btn btn-success" id="addComputer" href="addComputer"><spring:message
+						code="button.addComputer" /></a> <a class="btn btn-default"
+					id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message
+						code="button.edit" /></a>
 			</div>
 		</div>
 
@@ -62,26 +73,26 @@
 							</a>
 						</span></th>
 						<!-- Variable declarations for passing labels as parameters -->
-						<th>Computer id</th>
-						<th>Computer name <a
+						<th><spring:message code="title.computer.id" /></th>
+						<th><spring:message code="title.computer.name" /><a
 							href="listComputers?order=computer.name ASC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-alphabet"></i></a> <a
 							href="listComputers?order=computer.name DESC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a></th>
 
-						<th>Introduced date <a
+						<th><spring:message code="title.computer.introduced" /><a
 							href="listComputers?order=introduced ASC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-attributes"></i></a> <a
 							href="listComputers?order=introduced DESC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-attributes-alt"></i></a></th>
 						<!-- Table header for Discontinued Date -->
-						<th>Discontinued date <a
+						<th><spring:message code="title.computer.discontinued" /><a
 							href="listComputers?order=discontinued ASC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-attributes"></i></a> <a
 							href="listComputers?order=discontinued DESC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-attributes-alt"></i></a></th>
 						<!-- Table header for Company -->
-						<th>Company <a
+						<th><spring:message code="title.company" /><a
 							href="listComputers?order=company.name ASC&search=${search}"><i
 								class="glyphicon glyphicon-sort-by-alphabet"></i></a> <a
 							href="listComputers?order=company.name DESC&search=${search}"><i
