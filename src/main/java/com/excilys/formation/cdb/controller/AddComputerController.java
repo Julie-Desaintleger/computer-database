@@ -1,7 +1,6 @@
 package com.excilys.formation.cdb.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +18,6 @@ import com.excilys.formation.cdb.dto.CompanyDTO;
 import com.excilys.formation.cdb.dto.ComputerDTO;
 import com.excilys.formation.cdb.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
-import com.excilys.formation.cdb.exception.DateDiscontinuedException;
-import com.excilys.formation.cdb.exception.EmptyDateException;
-import com.excilys.formation.cdb.exception.NameException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -59,39 +55,24 @@ public class AddComputerController {
 	CompanyDTO companyDTO = new CompanyDTO();
 	Computer computer = new Computer();
 
-	Map<String, String> errors = new HashMap<String, String>();
+	Map<String, String> errors = ComputerValidator.getErrors();
 	String result;
 
-	try {
-	    ComputerValidator.validatorName(computerName);
-	    computerDTO.setName(computerName);
-	} catch (NameException e) {
-	    logger.error("computer name", e.getMessage());
-	    errors.put("computerName", e.getMessage());
-	}
-
-	if (discontinued != null) {
-	    try {
-		ComputerValidator.validatorDate(introduced, discontinued);
-	    } catch (DateDiscontinuedException e) {
-		logger.error("error with discontinued date", e.getMessage());
-		errors.put("dateDiscontinued", e.getMessage());
-	    } catch (EmptyDateException e) {
-		logger.error("error with introduced/discontinued date", e.getMessage());
-		errors.put("dateIntroduced", e.getMessage());
-	    }
-	}
-
 	if (errors.isEmpty()) {
+	    computerDTO.setName(computerName);
 	    computerDTO.setIntroduced(introduced);
 	    computerDTO.setDiscontinued(discontinued);
 	    companyDTO.setId(companyId);
 	    computerDTO.setCompany(companyDTO);
-	    computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
-	    computerService.insert(computer);
-	    result = "Computer added with success.";
-	    logger.info("Insert computer done");
-	    return "redirect:/";
+
+	    if (ComputerValidator.validateComputer(computerDTO)) {
+		computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
+		computerService.insert(computer);
+		result = "Computer added with success.";
+		logger.info("Insert computer done");
+		errors.clear();
+		return "redirect:/";
+	    }
 	} else {
 	    result = "Fail to add this computer.";
 	    logger.info("Insert don't work");
@@ -99,6 +80,9 @@ public class AddComputerController {
 	    model.addAttribute("result", result);
 	    return "addComputer";
 	}
+	model.addAttribute("errors", errors);
 
+	errors.clear();
+	return "addComputer";
     }
 }
