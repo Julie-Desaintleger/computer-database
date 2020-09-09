@@ -65,6 +65,8 @@ public class AddComputerController {
 	    companyDTO.setId(companyId);
 	    computerDTO.setCompany(companyDTO);
 
+	    logger.debug(computerDTO.toString());
+
 	    if (ComputerValidator.validateComputer(computerDTO)) {
 		computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
 		computerService.insert(computer);
