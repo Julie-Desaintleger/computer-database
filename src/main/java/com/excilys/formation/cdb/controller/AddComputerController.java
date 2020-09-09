@@ -74,15 +74,15 @@ public class AddComputerController {
 		logger.info("Insert computer done");
 		errors.clear();
 		return "redirect:/";
+	    } else {
+		result = "Fail to add this computer.";
+		logger.info("Insert don't work");
+		model.addAttribute("errors", errors);
+		model.addAttribute("result", result);
+		logger.debug("errors values " + errors.values().toString());
+		return "addComputer";
 	    }
-	} else {
-	    result = "Fail to add this computer.";
-	    logger.info("Insert don't work");
-	    model.addAttribute("errors", errors);
-	    model.addAttribute("result", result);
-	    return "addComputer";
 	}
-	model.addAttribute("errors", errors);
 
 	errors.clear();
 	return "addComputer";
