@@ -22,8 +22,8 @@ public class ComputerValidator {
 	return errors;
     }
 
-    public static boolean validatorName(String name) {
-	if (name.isEmpty()) {
+    public static boolean validatorName(ComputerDTO computerDTO) {
+	if (computerDTO.getName().isEmpty()) {
 	    logger.info("Name is required");
 	    errors.put("computerName", new NameException().getMessage());
 	    return false;
@@ -31,14 +31,14 @@ public class ComputerValidator {
 	return true;
     }
 
-    public static boolean validatorDates(String introduced, String discontinued) {
+    public static boolean validatorDates(ComputerDTO computerDTO) {
 	DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 	LocalDate discontinuedLocDate = null;
 	LocalDate introducedLocDate = null;
-	if (!discontinued.isEmpty()) {
-	    discontinuedLocDate = LocalDate.parse(discontinued, formatter);
-	    if (!introduced.isEmpty()) {
-		introducedLocDate = LocalDate.parse(introduced, formatter);
+	if (!computerDTO.getDiscontinued().isEmpty()) {
+	    discontinuedLocDate = LocalDate.parse(computerDTO.getDiscontinued(), formatter);
+	    if (!computerDTO.getIntroduced().isEmpty()) {
+		introducedLocDate = LocalDate.parse(computerDTO.getIntroduced(), formatter);
 	    } else {
 		logger.info("Introduced date have to be known");
 		errors.put("dateIntroduced", new EmptyDateException().getMessage());
@@ -55,8 +55,7 @@ public class ComputerValidator {
 
     public static boolean validateComputer(ComputerDTO computerDTO) {
 
-	if (validatorDates(computerDTO.getIntroduced(), computerDTO.getDiscontinued())
-		&& validatorName(computerDTO.getName())) {
+	if (validatorDates(computerDTO) && validatorName(computerDTO)) {
 	    return true;
 	}
 

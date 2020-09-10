@@ -1,7 +1,6 @@
 package com.excilys.formation.cdb.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +18,6 @@ import com.excilys.formation.cdb.dto.CompanyDTO;
 import com.excilys.formation.cdb.dto.ComputerDTO;
 import com.excilys.formation.cdb.dto.mapper.CompanyDTOMapper;
 import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
-import com.excilys.formation.cdb.exception.DateDiscontinuedException;
-import com.excilys.formation.cdb.exception.EmptyDateException;
-import com.excilys.formation.cdb.exception.NameException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.service.CompanyService;
@@ -68,50 +64,40 @@ public class EditComputerController {
     @PostMapping
     public String post(Model model, @RequestParam String id, @RequestParam String computerName,
 	    @RequestParam String companyId, @RequestParam String introduced, @RequestParam String discontinued) {
+	logger.info("POST editComputer");
+
 	ComputerDTO computerDTO = new ComputerDTO();
 	CompanyDTO companyDTO = new CompanyDTO();
 	Computer computer = new Computer();
-
-	Map<String, String> errors = new HashMap<String, String>();
+	Map<String, String> errors = ComputerValidator.getErrors();
 	String result;
-
-	try {
-	    ComputerValidator.validatorName(computerName);
-	    computerDTO.setName(computerName);
-	} catch (NameException e) {
-	    logger.error("computer name", e.getMessage());
-	    errors.put("computerName", e.getMessage());
-	}
-
-	if (discontinued != null) {
-	    try {
-		ComputerValidator.validatorDate(introduced, discontinued);
-	    } catch (DateDiscontinuedException e) {
-		logger.error("error with discontinued date", e.getMessage());
-		errors.put("dateDiscontinued", e.getMessage());
-	    } catch (EmptyDateException e) {
-		logger.error("error with introduced/discontinued date", e.getMessage());
-		errors.put("dateIntroduced", e.getMessage());
-	    }
-	}
 
 	if (errors.isEmpty()) {
 	    computerDTO.setId(id);
+	    computerDTO.setName(computerName);
 	    computerDTO.setIntroduced(introduced);
 	    computerDTO.setDiscontinued(discontinued);
 	    companyDTO.setId(companyId);
 	    computerDTO.setCompany(companyDTO);
-	    computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
-	    computerService.update(computer);
-	    result = "Computer updated with success.";
-	    logger.info("Update computer done");
-	    return "redirect:/";
-	} else {
-	    result = "Fail to update this computer.";
-	    logger.info("Update don't work");
-	    model.addAttribute("errors", errors);
-	    model.addAttribute("result", result);
-	    return "editComputer";
+
+	    logger.debug(computerDTO.toString());
+
+	    if (ComputerValidator.validateComputer(computerDTO)) {
+		computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
+		computerService.update(computer);
+		result = "Computer updated with success.";
+		logger.info("Update computer done");
+		model.addAttribute("result", result);
+		return "redirect:/";
+	    } else {
+		logger.debug("if failed to update :\n" + computerDTO.toString());
+		result = "Fail to update this computer.";
+		logger.info("Update don't work");
+		model.addAttribute("errors", errors);
+		model.addAttribute("result", result);
+	    }
 	}
+	errors.clear();
+	return null;
     }
 }
