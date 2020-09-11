@@ -2,6 +2,15 @@ package com.excilys.formation.cdb.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Un ordinateur doit obligatoirement avoir au moins un nom. Si cela est
  * possible, l'ordinateur peut avoir la date à laquelle il a été introduit, la
@@ -10,11 +19,21 @@ import java.time.LocalDate;
  * @author julie
  *
  */
+@Entity(name = "Computer")
+@Table(name = "computer")
 public class Computer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "introduced")
     private LocalDate introduced;
+    @Column(name = "discontinued")
     private LocalDate discontinued;
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
     public Computer(Long id, String name, LocalDate introduced, LocalDate discontinued, Company company) {
