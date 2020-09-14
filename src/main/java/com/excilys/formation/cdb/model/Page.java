@@ -1,48 +1,48 @@
 package com.excilys.formation.cdb.model;
 
 public class Page {
-    private int firstLine;
-    private int rows;
-    private int currentPage;
-    private int totalPage;
-    private static final int DEFAULT_PAGE = 1;
-    private static final int MAX_LINES = 20;
+    private Long firstLine;
+    private Long rows;
+    private Long currentPage;
+    private Long totalPage;
+    private static final Long DEFAULT_PAGE = 1L;
+    private static final Long MAX_LINES = 10L;
 
     public Page() {
-	this.firstLine = 0;
+	this.firstLine = 0L;
 	this.rows = MAX_LINES;
 	this.currentPage = DEFAULT_PAGE;
     }
 
-    public int getFirstLine() {
+    public Long getFirstLine() {
 	return firstLine;
     }
 
-    public void setFirstLine(int line) {
+    public void setFirstLine(Long line) {
 	this.firstLine = line;
     }
 
-    public int getRows() {
+    public Long getRows() {
 	return rows;
     }
 
-    public void setRows(int totalRows) {
+    public void setRows(Long totalRows) {
 	this.rows = totalRows;
     }
 
-    public int getCurrentPage() {
+    public Long getCurrentPage() {
 	return currentPage;
     }
 
-    public void setCurrentPage(int currentPage) {
+    public void setCurrentPage(Long currentPage) {
 	this.currentPage = currentPage;
     }
 
-    public int getTotalPage() {
+    public Long getTotalPage() {
 	return totalPage;
     }
 
-    public void setTotalPage(int totalPage) {
+    public void setTotalPage(Long totalPage) {
 	this.totalPage = totalPage;
     }
 
@@ -104,15 +104,15 @@ public class Page {
     /**
      * Calcule le nombre total de pages nécéssaires pour afficher toutes les entrées
      * 
-     * @param nbTotal le nombre total d'entrées dans la base de données
+     * @param total le nombre total d'entrées dans la base de données
      * @return le nombre de pages nécéssaires pour toutes les afficher
      */
-    public int getTotalPages(int nbTotal) {
-	if (nbTotal % getRows() == 0) {
-	    this.totalPage = nbTotal / getRows();
+    public Long getTotalPages(Long total) {
+	if (total % getRows() == 0) {
+	    this.totalPage = total / getRows();
 	    return this.totalPage;
 	}
-	this.totalPage = nbTotal / getRows() + 1;
+	this.totalPage = total / getRows() + 1;
 	return this.totalPage;
     }
 

@@ -35,15 +35,15 @@ public class ListComputersController {
 	Page page = new Page();
 
 	if (dashboardDTO.getLinesNb() != null) {
-	    int linesNb = Integer.parseInt(dashboardDTO.getLinesNb());
+	    Long linesNb = Long.valueOf(dashboardDTO.getLinesNb());
 	    page.setRows(linesNb);
 	}
 
-	int total = computerService.countComputers(dashboardDTO.getSearch());
-	int nbPages = page.getTotalPages(total);
+	Long total = computerService.countComputers(dashboardDTO.getSearch());
+	Long nbPages = page.getTotalPages(total);
 
 	if (dashboardDTO.getPageNb() != null) {
-	    int pageAsked = Integer.parseInt(dashboardDTO.getPageNb());
+	    Long pageAsked = Long.valueOf(dashboardDTO.getPageNb());
 	    if (pageAsked > 0 & pageAsked <= nbPages) {
 		page.setCurrentPage(pageAsked);
 	    }
