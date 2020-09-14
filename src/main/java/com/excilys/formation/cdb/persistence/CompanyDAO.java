@@ -1,39 +1,30 @@
 package com.excilys.formation.cdb.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.cdb.exception.DAOException;
 import com.excilys.formation.cdb.model.Company;
 import com.excilys.formation.cdb.model.Page;
-import com.excilys.formation.cdb.persistence.mapper.CompanyMapper;
+import com.excilys.formation.cdb.model.QCompany;
+import com.excilys.formation.cdb.model.QComputer;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
 public class CompanyDAO {
-    private static final String SELECT_ALL = "SELECT id, name FROM company ORDER BY id";
-    private static final String SELECT_BY_ID = "SELECT id, name FROM company WHERE company.id = ?";
-    private static final String COUNT = "SELECT COUNT(id) AS nb_company FROM company";
-    private static final String SELECT_WITH_PAGE = "SELECT id, name FROM company ORDER BY id LIMIT ? OFFSET ?";
-    private static final String DELETE = "DELETE FROM company where company.id = ?";
-    private static final String DELETE_COMPUTERS = "DELETE FROM computer WHERE company_id = ?";
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public CompanyDAO(DataSource dataSource) {
-	jdbcTemplate = new JdbcTemplate(dataSource);
-    }
 
     /**
      * Lister toutes les compagnies
@@ -42,12 +33,13 @@ public class CompanyDAO {
      */
     public List<Company> getAll() {
 	logger.info("Liste des compagnies.");
+	QCompany company = QCompany.company;
+	JPAQuery<Company> query = new JPAQuery<Company>(entityManager);
 	try {
-	    logger.debug("Query : " + SELECT_ALL);
-	    return jdbcTemplate.query(SELECT_ALL, new CompanyMapper());
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> Lister toutes les compagnies." + e.getMessage());
-	    throw new DAOException("Erreur DAO -> Lister toutes les compagnies.", e);
+	    return (ArrayList<Company>) query.from(company).orderBy(company.name.asc().nullsLast()).fetch();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Lister toutes les compagnies.", dae);
+	    return new ArrayList<Company>();
 	}
     }
 
@@ -56,15 +48,17 @@ public class CompanyDAO {
      * 
      * @return le nombre total de compagnies
      */
-    public int countAll() {
+    public Long countAll() {
 	logger.info("Nombre total de compagnie.s dans la base.");
+	QCompany company = QCompany.company;
+	long result = 0L;
+	JPAQuery<Company> query = new JPAQuery<Company>(entityManager);
 	try {
-	    logger.debug("Query : " + COUNT);
-	    return jdbcTemplate.queryForObject(COUNT, Integer.class);
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> Compter toutes les compagnies" + e.getMessage());
-	    throw new DAOException("Erreur DAO -> Compter toutes les compagnies", e);
+	    result = query.from(company).fetchCount();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Compter toutes les compagnies", dae);
 	}
+	return result;
     }
 
     /**
@@ -75,24 +69,28 @@ public class CompanyDAO {
      */
     public List<Company> getByPage(Page p) {
 	logger.info("Liste des compagnies de la page.");
+
+	QCompany company = QCompany.company;
+	JPAQuery<Company> query = new JPAQuery<Company>(entityManager);
 	try {
-	    logger.debug("Query : " + SELECT_WITH_PAGE);
-	    Object[] params = { p.getRows(), p.getFirstLine() };
-	    return jdbcTemplate.query(SELECT_WITH_PAGE, params, new CompanyMapper());
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> liste des compagnies de la page : " + p.getCurrentPage() + e.getMessage());
-	    throw new DAOException("Erreur DAO -> liste des compagnies de la page.", e);
+	    return (ArrayList<Company>) query.from(company).offset(p.getCurrentPage() * p.getRows()).limit(p.getRows())
+		    .fetch();
+	} catch (Exception e) {
+	    logger.error("Erreur DAO -> liste des compagnies de la page : ", e);
+	    return new ArrayList<Company>();
 	}
     }
 
     public Company findById(Long id) {
 	logger.info("Recherche compagnie par id.");
+
+	QCompany company = QCompany.company;
+	JPAQuery<Company> query = new JPAQuery<Company>(entityManager);
 	try {
-	    logger.debug("Query : " + SELECT_BY_ID);
-	    return jdbcTemplate.queryForObject(SELECT_BY_ID, new Object[] { id }, new CompanyMapper());
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> Compagnie par id : " + e.getMessage());
-	    throw new DAOException("Erreur DAO -> Compagnie par id.", e);
+	    return query.from(company).where(company.id.eq(id)).fetchOne();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Compagnie par id : ", dae);
+	    return null;
 	}
     }
 
@@ -101,22 +99,22 @@ public class CompanyDAO {
      * 
      * @param id l'identifiant d'une compagnie
      */
-    @Transactional(rollbackFor = { Exception.class })
-    public void deleteByCompany(Long id) {
+    @Transactional
+    public boolean deleteByCompany(Long id) {
 	logger.info("Supression d'une compagnie et ses ordinateurs associés.");
-	Company company = findById(id);
-	if (company != null) {
-	    try {
-		logger.debug("First Query : " + DELETE_COMPUTERS);
-		int rowCount = jdbcTemplate.update(DELETE_COMPUTERS, new Object[] { id });
-		logger.info("Enregistrements d'ordinateurs correctement supprimés, nb enregistrements : " + rowCount);
-		logger.debug("Second Query : " + DELETE);
-		jdbcTemplate.update(DELETE, new Object[] { id });
-	    } catch (DataAccessException e) {
-		logger.error("Erreur DAO -> supprimer une compagnie avec les ordinateurs :" + e);
-		throw new DAOException("Erreur DAO -> supprimer une compagnie avec les ordinateurs", e);
-	    }
+	QCompany company = QCompany.company;
+	QComputer computer = QComputer.computer;
+	JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
+	try {
+	    queryFactory.delete(computer).where(company.id.eq(id)).execute();
+	    queryFactory.delete(company).where(company.id.eq(id)).execute();
+	    logger.info("Enregistrements d'ordinateurs correctement supprimés");
+	    return true;
+
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> supprimer une compagnie avec les ordinateurs : ", dae);
+	    return false;
 	}
 
     }

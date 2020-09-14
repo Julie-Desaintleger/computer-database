@@ -22,7 +22,7 @@ public class CompanyService {
 	return companyDAO.getAll();
     }
 
-    public int countAll() {
+    public Long countAll() {
 	return companyDAO.countAll();
     }
 
