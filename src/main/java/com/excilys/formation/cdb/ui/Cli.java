@@ -32,7 +32,7 @@ public class Cli {
     public void listAllCompanies() {
 	boolean isCompleted = false;
 	Page newPage = new Page();
-	int nbCompanies = companyService.countAll();
+	Long nbCompanies = companyService.countAll();
 
 	while (!isCompleted) {
 	    List<Company> allCompanies = companyService.getAllByPage(newPage);
@@ -47,7 +47,7 @@ public class Cli {
     public void listAllComputers() {
 	boolean isCompleted = false;
 	Page newPage = new Page();
-	int nbComputer = computerService.countAll();
+	Long nbComputer = computerService.countAll();
 
 	while (!isCompleted) {
 	    List<Computer> allComputers = computerService.getAllByPage(newPage);
@@ -271,12 +271,12 @@ public class Cli {
      * Pagination de l'affichage
      * 
      * @param newPage
-     * @param nbTotal
+     * @param nbCompanies
      * @return true quand on arrête l'affichage par page, sinon false.
      */
-    public static boolean optionsPages(Page newPage, int nbTotal) {
+    public static boolean optionsPages(Page newPage, Long nbCompanies) {
 	boolean stop = false;
-	System.out.println("Page " + newPage.getCurrentPage() + "/" + newPage.getTotalPages(nbTotal));
+	System.out.println("Page " + newPage.getCurrentPage() + "/" + newPage.getTotalPages(nbCompanies));
 	System.out.println("Entrez 'p' pour Précédent - " + "'s' pour Suivant -" + " 'page [numero page]' "
 		+ "et 'q' pour quitter");
 
@@ -287,7 +287,7 @@ public class Cli {
 	    newPage.getPreviousPage();
 	    return stop;
 	case ("s"):
-	    newPage.getNextPage(nbTotal);
+	    newPage.getNextPage(nbCompanies.intValue());
 	    return stop;
 	case ("q"):
 	    return stop = true;
@@ -304,9 +304,9 @@ public class Cli {
     }
 
     private static void parsePage(Page newPage, boolean stop, String num) {
-	int idPage;
+	Long idPage;
 	try {
-	    idPage = Integer.parseInt(num);
+	    idPage = Long.valueOf(num);
 	    System.out.println("Vous avez demandé la page : " + idPage);
 	    if (idPage > 0 && idPage <= newPage.getTotalPage()) {
 		newPage.setCurrentPage(idPage);
