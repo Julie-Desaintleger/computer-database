@@ -22,7 +22,7 @@ public class ComputerService {
 	return computerDAO.getAll();
     }
 
-    public int countAll() {
+    public Long countAll() {
 	return computerDAO.countAll();
     }
 
@@ -50,7 +50,7 @@ public class ComputerService {
 	return computerDAO.getBySearchOrdered(page, research, order);
     }
 
-    public int countComputers(String research) {
+    public Long countComputers(String research) {
 	return computerDAO.count(research);
     }
 }

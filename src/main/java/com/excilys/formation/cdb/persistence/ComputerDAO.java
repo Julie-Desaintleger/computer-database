@@ -1,44 +1,29 @@
 package com.excilys.formation.cdb.persistence;
 
-import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.cdb.exception.DAOException;
 import com.excilys.formation.cdb.model.Computer;
 import com.excilys.formation.cdb.model.Page;
-import com.excilys.formation.cdb.persistence.mapper.ComputerMapper;
+import com.excilys.formation.cdb.model.QCompany;
+import com.excilys.formation.cdb.model.QComputer;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
 public class ComputerDAO {
-    private static final String SELECT_ALL = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id ORDER BY computer.id";
-    private static final String COUNT = "SELECT COUNT(id) AS nb_computer FROM computer";
-    private static final String COUNT_SEARCH = "SELECT COUNT(computer.id) FROM computer LEFT JOIN company ON company_id = company.id "
-	    + "WHERE computer.name LIKE ? OR company.name LIKE ?";
-    private static final String SELECT_BY_ID = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id WHERE computer.id = ?";
-    private static final String INSERT = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE computer.id = ?";
-    private static final String DELETE = "DELETE FROM computer where id = ?";
-    private static final String SELECT_WITH_PAGE = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name FROM computer LEFT JOIN company ON company_id = company.id  ORDER BY %s LIMIT ? OFFSET ?";
-    private static final String SELECT_BY_SEARCH = "SELECT computer.id, computer.name, introduced, discontinued, company_id, company.name AS company_name"
-	    + " FROM computer LEFT JOIN company on company_id = company.id WHERE computer.name LIKE ? OR company.name LIKE ? ORDER BY %s LIMIT ? OFFSET ?";
-
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public ComputerDAO(DataSource dataSource) {
-	jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    @PersistenceContext
+    EntityManager entityManager;
 
     /**
      * Lister tous les ordinateurs
@@ -47,12 +32,13 @@ public class ComputerDAO {
      */
     public List<Computer> getAll() {
 	logger.info("Liste des ordinateurs.");
+	QComputer computer = QComputer.computer;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    logger.debug("Query : " + SELECT_ALL);
-	    return jdbcTemplate.query(SELECT_ALL, new ComputerMapper());
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> Lister tous les ordinateurs" + e.getMessage());
-	    throw new DAOException("Erreur DAO -> Lister tous les ordinateurs.", e);
+	    return (ArrayList<Computer>) query.from(computer).orderBy(computer.name.asc().nullsLast()).fetch();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Lister tous les ordinateurs.", dae);
+	    return new ArrayList<Computer>();
 	}
     }
 
@@ -61,15 +47,17 @@ public class ComputerDAO {
      * 
      * @return le nombre total d'ordinateurs.
      */
-    public int countAll() {
+    public Long countAll() {
 	logger.info("Nombre d'ordinateurs.");
+	QComputer computer = QComputer.computer;
+	long result = 0L;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    logger.debug("Query : " + COUNT);
-	    return jdbcTemplate.queryForObject(COUNT, Integer.class);
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> Compter tous les ordinateurs");
-	    throw new DAOException("Erreur DAO -> Compter tous les ordinateurs", e);
+	    result = query.from(computer).fetchCount();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Compter toutes les compagnies", dae);
 	}
+	return result;
     }
 
     /**
@@ -79,18 +67,15 @@ public class ComputerDAO {
      * @return L'ordinateur correspondant si l'identifiant est présent, sinon null.
      */
     public Computer findById(Long id) {
-	Computer computer = null;
 	logger.info("Recherche ordinateur.");
-	if (id != null) {
-	    try {
-		logger.debug("Query : " + SELECT_BY_ID);
-		return jdbcTemplate.queryForObject(SELECT_BY_ID, new Object[] { id }, new ComputerMapper());
-	    } catch (DataAccessException e) {
-		logger.error("Erreur DAO -> Ordinateur par id : " + e.getMessage());
-		throw new DAOException("Erreur DAO -> Ordinateur par id", e);
-	    }
+	QComputer computer = QComputer.computer;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
+	try {
+	    return query.from(computer).where(computer.id.eq(id)).fetchOne();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> Compagnie par id : ", dae);
+	    return null;
 	}
-	return computer;
     }
 
     /**
@@ -98,28 +83,19 @@ public class ComputerDAO {
      * 
      * @param computer l'ordinateur à insérer en base
      */
-    public void create(Computer computer) {
-	if (computer != null) {
-	    try {
-		Long company_id;
-		Date introducedDate = computer.getIntroduced() == null ? null : Date.valueOf(computer.getIntroduced());
-		Date discontinuedDate = computer.getDiscontinued() == null ? null
-			: Date.valueOf(computer.getDiscontinued());
-		if (computer.getCompany() == null || computer.getCompany().getId() == 0) {
-		    company_id = null;
-		} else {
-		    company_id = computer.getCompany().getId();
-		}
-		Object[] params = { computer.getName(), introducedDate, discontinuedDate, company_id };
-		logger.info("Creation ordinateur.");
-		logger.debug("Query : " + INSERT);
-		jdbcTemplate.update(INSERT, params);
-	    } catch (DataAccessException e) {
-		logger.error(
-			"Erreur DAO -> insertion ordinateur. Vérifiez que l'id pour l'entreprise" + e.getMessage());
-		throw new DAOException("Erreur DAO -> insertion ordinateur.", e);
-	    }
+    @Transactional
+    public Computer create(Computer newComputer) {
+	logger.info("Creation ordinateur.");
+	newComputer.setId(null);
+	try {
+	    entityManager.persist(newComputer);
+	    entityManager.flush();
+	    return newComputer;
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> insertion ordinateur.", dae);
+	    return null;
 	}
+
     }
 
     /**
@@ -127,35 +103,21 @@ public class ComputerDAO {
      * 
      * @param computer l'ordinateur à mettre à jour en base
      */
-    public void update(Computer computer) {
-	if (computer != null) {
-	    try {
-		Date introducedDate = null;
-		Date discontinuedDate = null;
-		if (computer.getIntroduced() != null) {
-		    introducedDate = Date.valueOf(computer.getIntroduced());
-		}
-		if (computer.getDiscontinued() != null) {
-		    discontinuedDate = Date.valueOf(computer.getDiscontinued());
-		}
-		Long company_id;
-		if (computer.getCompany() == null || computer.getCompany().getId() == 0) {
-		    company_id = null;
-		} else {
-		    company_id = computer.getCompany().getId();
-		}
-		Object[] params = { computer.getName(), introducedDate, discontinuedDate, company_id,
-			computer.getId() };
-		logger.info("Mise à jour ordinateur.");
-		logger.debug("Query : " + UPDATE);
-		jdbcTemplate.update(UPDATE, params);
-	    } catch (DataAccessException e) {
-		logger.error("Erreur DAO -> mise a jour ordinateur" + e.getMessage());
-		throw new DAOException("Erreur DAO -> mise a jour ordinateur", e);
-	    }
-
+    @Transactional
+    public Computer update(Computer newComputer) {
+	logger.info("Mise à jour ordinateur.");
+	QComputer computer = QComputer.computer;
+	JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+	try {
+	    queryFactory.update(computer).where(computer.id.eq(newComputer.getId()))
+		    .set(computer.name, newComputer.getName()).set(computer.introduced, newComputer.getIntroduced())
+		    .set(computer.discontinued, newComputer.getDiscontinued())
+		    .set(computer.company.id, newComputer.getCompany().getId()).execute();
+	    return newComputer;
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> mise a jour ordinateur", dae);
+	    return null;
 	}
-
     }
 
     /**
@@ -163,15 +125,18 @@ public class ComputerDAO {
      * 
      * @param id l'identifiant de l'ordinateur à supprimer en base
      */
+    @Transactional
     public void delete(Long id) {
+	logger.info("Suppression ordinateur.");
+	QComputer computer = QComputer.computer;
+	JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
 	try {
-	    logger.info("Suppression ordinateur.");
-	    logger.debug("Query : " + DELETE);
-	    jdbcTemplate.update(DELETE, new Object[] { id });
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> suppression ordinateur" + e.getMessage());
-	    throw new DAOException("Erreur DAO -> suppression ordinateur", e);
+	    queryFactory.delete(computer).where(computer.id.eq(id)).execute();
+	} catch (Exception dae) {
+	    logger.error("Erreur DAO -> suppression ordinateur ", dae);
 	}
+
     }
 
     /**
@@ -181,17 +146,17 @@ public class ComputerDAO {
      * @return la liste d'ordinateurs
      */
     public List<Computer> getByPage(Page p) {
+	logger.info("Liste d'ordinateurs par page.");
+	QComputer computer = QComputer.computer;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    String order = "computer.id";
-	    String orderChoice = String.format(SELECT_WITH_PAGE, order);
-	    Object[] params = { p.getRows(), p.getFirstLine() };
-	    logger.info("Liste d'ordinateurs par page.");
-	    logger.debug("Query : " + orderChoice);
-	    return jdbcTemplate.query(orderChoice, params, new ComputerMapper());
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> liste des ordinateurs de la page : " + p.getCurrentPage() + e.getMessage());
-	    throw new DAOException("Erreur DAO -> liste des ordinateurs de la page", e);
+	    return (ArrayList<Computer>) query.from(computer).offset(p.getCurrentPage() * p.getRows())
+		    .limit(p.getRows()).fetch();
+	} catch (Exception e) {
+	    logger.error("Erreur DAO -> liste des ordinateurs de la page : ", e);
+	    return new ArrayList<Computer>();
 	}
+
     }
 
     /**
@@ -201,21 +166,19 @@ public class ComputerDAO {
      *               compagnie
      * @return le nombre d'ordinateur à rechercher.
      */
-    public int count(String search) {
+    public Long count(String search) {
+	logger.info("Nombre d'ordinateurs par recherche.");
+	QCompany company = QCompany.company;
+	QComputer computer = QComputer.computer;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    logger.info("Nombre d'ordinateurs par recherche.");
-	    if (search == null) {
-		logger.debug("Query : " + COUNT);
-		return jdbcTemplate.queryForObject(COUNT, Integer.class);
-	    } else {
-		Object[] params = { "%" + search + "%", "%" + search + "%" };
-		logger.debug("Query : " + COUNT_SEARCH);
-		return jdbcTemplate.queryForObject(COUNT_SEARCH, params, Integer.class);
-	    }
-	} catch (DataAccessException e) {
+	    return query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
+		    .where(computer.name.contains(search).or(company.name.contains(search))).fetchCount();
+	} catch (Exception e) {
 	    logger.error("Erreur DAO -> compter tous les ordinateurs à rechercher", e);
-	    throw new DAOException("Erreur DAO -> compter tous les ordinateurs à rechercher", e);
+	    return 0L;
 	}
+
     }
 
     /**
@@ -228,27 +191,20 @@ public class ComputerDAO {
      * @return la liste des ordinateurs recherchés
      */
     public List<Computer> getBySearchOrdered(Page p, String research, String order) {
+	logger.info("Liste ordinateurs à rechercher.");
+
+	QComputer computer = QComputer.computer;
+	QCompany company = QCompany.company;
+	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    logger.info("Liste ordinateurs à rechercher.");
-	    if (order == null || order.isEmpty()) {
-		order = "computer.id";
-	    }
-	    if (research == null || research.isEmpty()) {
-		String orderChoice = String.format(SELECT_WITH_PAGE, order);
-		logger.debug("Query : " + orderChoice);
-		Object[] params = { p.getRows(), p.getFirstLine() };
-		return jdbcTemplate.query(orderChoice, params, new ComputerMapper());
-	    } else {
-		String orderChoice = String.format(SELECT_BY_SEARCH, order);
-		logger.debug("Query : " + orderChoice);
-		Object[] params = { "%" + research + "%", "%" + research + "%", p.getRows(), p.getFirstLine() };
-		return jdbcTemplate.query(orderChoice, params, new ComputerMapper());
-	    }
-	} catch (DataAccessException e) {
-	    logger.error("Erreur DAO -> liste des ordinateurs à rechercher de la page : " + p.getCurrentPage()
-		    + e.getMessage());
-	    throw new DAOException("Erreur DAO -> liste des ordinateurs à rechercher de la page", e);
+	    return (ArrayList<Computer>) query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
+		    .where(computer.name.contains(research).or(company.name.contains(research)))
+		    .offset(p.getCurrentPage() * p.getRows()).limit(p.getRows()).fetch();
+	} catch (Exception e) {
+	    logger.error("Erreur DAO -> liste des ordinateurs à rechercher de la page : ", e);
+	    return new ArrayList<Computer>();
 	}
+
     }
 
 }
