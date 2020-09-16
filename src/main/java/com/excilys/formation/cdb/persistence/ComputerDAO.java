@@ -34,12 +34,7 @@ public class ComputerDAO {
 	logger.info("Liste des ordinateurs.");
 	QComputer computer = QComputer.computer;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
-	try {
-	    return (ArrayList<Computer>) query.from(computer).orderBy(computer.name.asc().nullsLast()).fetch();
-	} catch (Exception dae) {
-	    logger.error("Erreur DAO -> Lister tous les ordinateurs.", dae);
-	    return new ArrayList<Computer>();
-	}
+	return (ArrayList<Computer>) query.from(computer).fetch();
     }
 
     /**
@@ -55,7 +50,7 @@ public class ComputerDAO {
 	try {
 	    result = query.from(computer).fetchCount();
 	} catch (Exception dae) {
-	    logger.error("Erreur DAO -> Compter toutes les compagnies", dae);
+	    logger.error("Erreur DAO -> Compter tous les ordinateurs", dae);
 	}
 	return result;
     }
@@ -69,11 +64,13 @@ public class ComputerDAO {
     public Computer findById(Long id) {
 	logger.info("Recherche ordinateur.");
 	QComputer computer = QComputer.computer;
+	QCompany company = QCompany.company;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    return query.from(computer).where(computer.id.eq(id)).fetchOne();
+	    return query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
+		    .where(computer.id.eq(id)).fetchOne();
 	} catch (Exception dae) {
-	    logger.error("Erreur DAO -> Compagnie par id : ", dae);
+	    logger.error("Erreur DAO -> Ordinateur par id : ", dae);
 	    return null;
 	}
     }
@@ -83,19 +80,17 @@ public class ComputerDAO {
      * 
      * @param computer l'ordinateur à insérer en base
      */
-    @Transactional
-    public Computer create(Computer newComputer) {
-	logger.info("Creation ordinateur.");
-	newComputer.setId(null);
+    @Transactional()
+    public void create(Computer computer) {
+	logger.debug("Creation ordinateur: {}", computer);
 	try {
-	    entityManager.persist(newComputer);
+	    entityManager.persist(computer);
 	    entityManager.flush();
-	    return newComputer;
 	} catch (Exception dae) {
 	    logger.error("Erreur DAO -> insertion ordinateur.", dae);
-	    return null;
+	} finally {
+	    entityManager.close();
 	}
-
     }
 
     /**
@@ -150,8 +145,7 @@ public class ComputerDAO {
 	QComputer computer = QComputer.computer;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
-	    return (ArrayList<Computer>) query.from(computer).offset(p.getCurrentPage() * p.getRows())
-		    .limit(p.getRows()).fetch();
+	    return (ArrayList<Computer>) query.from(computer).offset(p.getFirstLine()).limit(p.getRows()).fetch();
 	} catch (Exception e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs de la page : ", e);
 	    return new ArrayList<Computer>();
@@ -166,14 +160,14 @@ public class ComputerDAO {
      *               compagnie
      * @return le nombre d'ordinateur à rechercher.
      */
-    public Long count(String search) {
+    public Long count(Page p) {
 	logger.info("Nombre d'ordinateurs par recherche.");
 	QCompany company = QCompany.company;
 	QComputer computer = QComputer.computer;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
 	    return query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
-		    .where(computer.name.contains(search).or(company.name.contains(search))).fetchCount();
+		    .where(computer.name.contains(p.getSearch()).or(company.name.contains(p.getSearch()))).fetchCount();
 	} catch (Exception e) {
 	    logger.error("Erreur DAO -> compter tous les ordinateurs à rechercher", e);
 	    return 0L;
@@ -190,16 +184,19 @@ public class ComputerDAO {
      * @param order    l'ordre à appliquer
      * @return la liste des ordinateurs recherchés
      */
-    public List<Computer> getBySearchOrdered(Page p, String research, String order) {
+    public List<Computer> getBySearchOrdered(Page p) {
 	logger.info("Liste ordinateurs à rechercher.");
 
 	QComputer computer = QComputer.computer;
 	QCompany company = QCompany.company;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
+	ArrayList<Computer> computers;
 	try {
-	    return (ArrayList<Computer>) query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
-		    .where(computer.name.contains(research).or(company.name.contains(research)))
-		    .offset(p.getCurrentPage() * p.getRows()).limit(p.getRows()).fetch();
+	    computers = (ArrayList<Computer>) query.from(computer).leftJoin(company)
+		    .on(computer.company.id.eq(company.id))
+		    .where(computer.name.contains(p.getSearch()).or(company.name.contains(p.getSearch())))
+		    .offset(p.getFirstLine()).limit(p.getRows()).fetch();
+	    return computers;
 	} catch (Exception e) {
 	    logger.error("Erreur DAO -> liste des ordinateurs à rechercher de la page : ", e);
 	    return new ArrayList<Computer>();
