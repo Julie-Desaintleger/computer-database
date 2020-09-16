@@ -21,22 +21,11 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "name")
     private String name;
 
-    public Company(Long id, String name) {
-	this.id = id;
-	this.name = name;
-    }
-
-    public Company(String name) {
-	super();
-	this.name = name;
-    }
-
     public Company() {
-	id = null;
-	name = null;
     }
 
     public Long getId() {
@@ -61,8 +50,8 @@ public class Company {
     }
 
     public static class Builder {
-	private Long id;
-	private String name;
+	private Long id = null;
+	private String name = null;
 
 	public Builder setId(Long id) {
 	    this.id = id;

@@ -19,51 +19,28 @@ import javax.persistence.Table;
  * @author julie
  *
  */
-@Entity(name = "Computer")
+@Entity
 @Table(name = "computer")
 public class Computer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "name", nullable = false)
     private String name;
+
     @Column(name = "introduced")
     private LocalDate introduced;
+
     @Column(name = "discontinued")
     private LocalDate discontinued;
+
     @ManyToOne
-    @JoinColumn(name = "company_id", nullable = true)
+    @JoinColumn(name = "company_id")
     private Company company;
 
-    public Computer(Long id, String name, LocalDate introduced, LocalDate discontinued, Company company) {
-	this.id = id;
-	this.name = name;
-	this.introduced = introduced;
-	this.discontinued = discontinued;
-	this.company = company;
-    }
-
-    public Computer(String name, LocalDate introduced, LocalDate discontinued, Company company) {
-	super();
-	this.name = name;
-	this.introduced = introduced;
-	this.discontinued = discontinued;
-	this.company = company;
-    }
-
-    public Computer(Long id, String name) {
-	super();
-	this.id = id;
-	this.name = name;
-    }
-
     public Computer() {
-	id = null;
-	name = null;
-	introduced = null;
-	discontinued = null;
-	company = null;
     }
 
     public Long getId() {
@@ -110,6 +87,45 @@ public class Computer {
     public String toString() {
 	return "Computer\t|\tid = " + id + "\t|\tname = " + name + "\t|\tintroduced = " + introduced
 		+ "\t|\tdiscontinued = " + discontinued + "\t|\tcompany = " + company;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj) {
+	    return true;
+	}
+	if (obj == null) {
+	    return false;
+	}
+	if (getClass() != obj.getClass()) {
+	    return false;
+	}
+	Computer other = (Computer) obj;
+	if (!this.getCompany().getId().equals(other.getCompany().getId())) {
+	    return false;
+	}
+	if (discontinued == null) {
+	    if (other.discontinued != null) {
+		return false;
+	    }
+	} else if (!discontinued.equals(other.discontinued)) {
+	    return false;
+	}
+	if (introduced == null) {
+	    if (other.introduced != null) {
+		return false;
+	    }
+	} else if (!introduced.equals(other.introduced)) {
+	    return false;
+	}
+	if (name == null) {
+	    if (other.name != null) {
+		return false;
+	    }
+	} else if (!name.equals(other.name)) {
+	    return false;
+	}
+	return true;
     }
 
     public static class Builder {
