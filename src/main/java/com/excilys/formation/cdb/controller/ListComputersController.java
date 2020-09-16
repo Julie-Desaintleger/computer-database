@@ -39,7 +39,8 @@ public class ListComputersController {
 	    page.setRows(linesNb);
 	}
 
-	Long total = computerService.countComputers(dashboardDTO.getSearch());
+	Long total = computerService.countComputers(page);
+
 	Long nbPages = page.getTotalPages(total);
 
 	if (dashboardDTO.getPageNb() != null) {
@@ -51,8 +52,7 @@ public class ListComputersController {
 
 	page.calculFirstLine();
 
-	List<Computer> computers = computerService.getComputerBySearchOrdered(page, dashboardDTO.getSearch(),
-		dashboardDTO.getOrder());
+	List<Computer> computers = computerService.getComputerBySearchOrdered(page);
 	List<ComputerDTO> computersDTO = computers.stream()
 		.map(computer -> ComputerDTOMapper.mapComputertoDTO(computer)).collect(Collectors.toList());
 
@@ -60,8 +60,8 @@ public class ListComputersController {
 	model.addAttribute("currentPage", page.getCurrentPage());
 	model.addAttribute("totalPages", nbPages);
 	model.addAttribute("lineNumber", page.getRows());
-	model.addAttribute("search", dashboardDTO.getSearch());
-	model.addAttribute("order", dashboardDTO.getOrder());
+	model.addAttribute("search", page.getSearch());
+	model.addAttribute("order", page.getOrderBy());
 	model.addAttribute("ListComputers", computersDTO);
 
 	return "listComputers";

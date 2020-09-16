@@ -46,11 +46,11 @@ public class ComputerService {
 	return computerDAO.getByPage(page);
     }
 
-    public List<Computer> getComputerBySearchOrdered(Page page, String research, String order) {
-	return computerDAO.getBySearchOrdered(page, research, order);
+    public List<Computer> getComputerBySearchOrdered(Page page) {
+	return computerDAO.getBySearchOrdered(page);
     }
 
-    public Long countComputers(String research) {
-	return computerDAO.count(research);
+    public Long countComputers(Page page) {
+	return computerDAO.count(page);
     }
 }

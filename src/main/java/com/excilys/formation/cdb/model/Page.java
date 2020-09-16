@@ -7,11 +7,15 @@ public class Page {
     private Long totalPage;
     private static final Long DEFAULT_PAGE = 1L;
     private static final Long MAX_LINES = 10L;
+    private String search;
+    private String orderBy;
 
     public Page() {
 	this.firstLine = 0L;
 	this.rows = MAX_LINES;
 	this.currentPage = DEFAULT_PAGE;
+	this.search = "";
+	this.orderBy = "computer.id";
     }
 
     public Long getFirstLine() {
@@ -44,6 +48,22 @@ public class Page {
 
     public void setTotalPage(Long totalPage) {
 	this.totalPage = totalPage;
+    }
+
+    public String getSearch() {
+	return search;
+    }
+
+    public void setSearch(String search) {
+	this.search = search;
+    }
+
+    public String getOrderBy() {
+	return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+	this.orderBy = orderBy;
     }
 
     /**
