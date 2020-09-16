@@ -184,7 +184,7 @@ public class Cli {
      * @return les informations sur l'ordinateur
      */
     private Computer getInfos() {
-	LocalDate dateContinued = null;
+	LocalDate dateIntroduced = null;
 	LocalDate dateDiscontinued = null;
 	Long idComputer = null;
 	Computer newComputer = null;
@@ -201,7 +201,7 @@ public class Cli {
 		System.out.println("Entrez la date d'introduction au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
 		if (answer.length() > 0) {
-		    dateContinued = Date.valueOf(answer).toLocalDate();
+		    dateIntroduced = Date.valueOf(answer).toLocalDate();
 		}
 		System.out.println("Entrez la date Discontinued au format YYYY-MM-DD (<Entrer> pour ignorer) : ");
 		answer = sc.nextLine();
@@ -219,7 +219,11 @@ public class Cli {
 		    logger.error("L'id doit être un nombre", e.getMessage());
 		    newCompany = null;
 		}
-		newComputer = new Computer(name, dateContinued, dateDiscontinued, newCompany);
+		newComputer = new Computer();
+		newComputer.setName(name);
+		newComputer.setIntroduced(dateIntroduced);
+		newComputer.setDiscontinued(dateDiscontinued);
+		newComputer.setCompany(newCompany);
 		System.out.println("Nouvel ordinateur : " + newComputer.toString());
 	    } catch (Exception e) {
 		logger.error("Erreur de format " + e.getMessage());
