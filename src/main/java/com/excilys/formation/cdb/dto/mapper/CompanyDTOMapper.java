@@ -6,7 +6,10 @@ import com.excilys.formation.cdb.model.Company;
 public class CompanyDTOMapper {
 
     public static Company mapDTOtoCompany(CompanyDTO companyDTO) {
-	return new Company(Long.valueOf(companyDTO.getId()), companyDTO.getName());
+	Company company = new Company();
+	company.setId(Long.valueOf(companyDTO.getId()));
+	company.setName(companyDTO.getName());
+	return company;
     }
 
     public static CompanyDTO mapCompanytoDTO(Company company) {

@@ -31,14 +31,17 @@ public class ComputerDTOMapper {
 	    if (!computerDTO.getDiscontinued().equals(null) && !computerDTO.getDiscontinued().isEmpty()) {
 		discontinued = LocalDate.parse(computerDTO.getDiscontinued(), formatter);
 	    }
-
-	    Long company_id = Long.valueOf(computerDTO.getCompany().getId());
-	    String company_name = computerDTO.getCompany().getName();
+	    Long company_id = null;
+	    String company_name = null;
+	    if (computerDTO.getCompany() != null && !computerDTO.getCompany().getId().isEmpty()) {
+		company_id = Long.valueOf(computerDTO.getCompany().getId());
+		company_name = computerDTO.getCompany().getName();
+		computer.setCompany(new Company.Builder().setId(company_id).setName(company_name).build());
+	    }
 	    computer.setId(id);
 	    computer.setName(name);
 	    computer.setIntroduced(introduced);
 	    computer.setDiscontinued(discontinued);
-	    computer.setCompany(new Company.Builder().setId(company_id).setName(company_name).build());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error("Erreur -> Mapping ComputerDTO to Computer", e.getMessage());
