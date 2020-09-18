@@ -67,6 +67,7 @@ public class ComputerDAO {
 	QCompany company = QCompany.company;
 	JPAQuery<Computer> query = new JPAQuery<Computer>(entityManager);
 	try {
+	    logger.info("company id : {}", company.id);
 	    return query.from(computer).leftJoin(company).on(computer.company.id.eq(company.id))
 		    .where(computer.id.eq(id)).fetchOne();
 	} catch (Exception dae) {
@@ -100,7 +101,7 @@ public class ComputerDAO {
      */
     @Transactional
     public Computer update(Computer newComputer) {
-	logger.info("Mise à jour ordinateur.");
+	logger.info("Mise à jour ordinateur : {}", newComputer);
 	QComputer computer = QComputer.computer;
 	JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 	try {

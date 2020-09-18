@@ -73,8 +73,7 @@ public class CompanyDAO {
 	QCompany company = QCompany.company;
 	JPAQuery<Company> query = new JPAQuery<Company>(entityManager);
 	try {
-	    return (ArrayList<Company>) query.from(company).offset(p.getCurrentPage() * p.getRows()).limit(p.getRows())
-		    .fetch();
+	    return (ArrayList<Company>) query.from(company).offset(p.getFirstLine()).limit(p.getRows()).fetch();
 	} catch (Exception e) {
 	    logger.error("Erreur DAO -> liste des compagnies de la page : ", e);
 	    return new ArrayList<Company>();

@@ -43,6 +43,7 @@ public class EditComputerController {
 	ComputerDTO computerDTO = new ComputerDTO();
 	if (id != null) {
 	    computer = computerService.getById(Long.parseLong(id));
+	    logger.info("computer : {}", computer);
 	}
 
 	if (computer != null) {
@@ -51,10 +52,21 @@ public class EditComputerController {
 	    logger.info("The computer does not exist");
 	}
 
+	Company companyOfC = computer.getCompany();
+	if (companyOfC != null) {
+	    String companyID = computer.getCompany().getId().toString();
+	    logger.info("companyId : {}", companyID);
+	    Long companyId = computer.getCompany().getId();
+	    String company = computer.getCompany().getName();
+	    model.addAttribute("companyOfC", companyOfC);
+	    model.addAttribute("companyID", companyId);
+	    model.addAttribute("companyName", company);
+	    logger.info("companyName : {}", company);
+	}
+
 	List<Company> companies = companyService.getAll();
 	List<CompanyDTO> companiesDTO = new ArrayList<CompanyDTO>();
 	companies.stream().forEach(company -> companiesDTO.add(CompanyDTOMapper.mapCompanytoDTO(company)));
-
 	model.addAttribute("ListCompanies", companiesDTO);
 	model.addAttribute("computer", computerDTO);
 	return "editComputer";
@@ -83,6 +95,7 @@ public class EditComputerController {
 	    logger.debug(computerDTO.toString());
 
 	    if (ComputerValidator.validateComputer(computerDTO)) {
+		logger.debug("Computer DTO is valid: {}", computerDTO);
 		computer = ComputerDTOMapper.mapDtoToComputer(computerDTO);
 		computerService.update(computer);
 		result = "Computer updated with success.";
