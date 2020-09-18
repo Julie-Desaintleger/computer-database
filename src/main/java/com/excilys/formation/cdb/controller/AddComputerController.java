@@ -51,6 +51,7 @@ public class AddComputerController {
     @PostMapping
     public String post(Model model, @RequestParam String computerName, @RequestParam String companyId,
 	    @RequestParam String introduced, @RequestParam String discontinued) {
+	logger.info("POST addComputer");
 	ComputerDTO computerDTO = new ComputerDTO();
 	CompanyDTO companyDTO = new CompanyDTO();
 	Computer computer = new Computer();
