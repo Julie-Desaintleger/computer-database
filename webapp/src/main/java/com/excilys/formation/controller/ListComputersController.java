@@ -1,7 +1,14 @@
-package com.excilys.formation.cdb.controller;
+package com.excilys.formation.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.excilys.cdb.binding.dto.ComputerDTO;
+import com.excilys.cdb.binding.dto.DashboardDTO;
+import com.excilys.cdb.binding.mapper.ComputerDTOMapper;
+import com.excilys.cdb.core.model.Computer;
+import com.excilys.cdb.core.model.Page;
+import com.excilys.cdb.service.ComputerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.excilys.formation.cdb.dto.ComputerDTO;
-import com.excilys.formation.cdb.dto.DashboardDTO;
-import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
-import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.model.Page;
-import com.excilys.formation.cdb.service.ComputerService;
 
 @Controller
 @RequestMapping("/listComputers")
