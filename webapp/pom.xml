@@ -4,18 +4,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>cdbMulti</artifactId>
-		<groupId>com.excilys</groupId>
+		<artifactId>computer-database</artifactId>
+		<groupId>com.excilys.cdb</groupId>
 		<version>${project.version}</version>
 	</parent>
 
-	<groupId>com.excilys.webapp</groupId>
+	<groupId>com.excilys.cdb</groupId>
 	<artifactId>webapp</artifactId>
+	<version>${module-webapp.version}</version>
 	<packaging>war</packaging>
-
-	<name>webapp</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,9 +22,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.excilys.service</groupId>
+			<groupId>com.excilys.cdb</groupId>
 			<artifactId>service</artifactId>
-			<version>${project.version}</version>
+			<version>${module-service.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -38,6 +35,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
+		<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+			</dependency>
 	</dependencies>
 
 </project>

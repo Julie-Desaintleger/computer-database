@@ -1,8 +1,18 @@
-package com.excilys.formation.cdb.controller;
+package com.excilys.formation.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.excilys.cdb.binding.dto.CompanyDTO;
+import com.excilys.cdb.binding.dto.ComputerDTO;
+import com.excilys.cdb.binding.mapper.CompanyDTOMapper;
+import com.excilys.cdb.binding.mapper.ComputerDTOMapper;
+import com.excilys.cdb.binding.validator.ComputerValidator;
+import com.excilys.cdb.core.model.Company;
+import com.excilys.cdb.core.model.Computer;
+import com.excilys.cdb.service.CompanyService;
+import com.excilys.cdb.service.ComputerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.excilys.formation.cdb.dto.CompanyDTO;
-import com.excilys.formation.cdb.dto.ComputerDTO;
-import com.excilys.formation.cdb.dto.mapper.CompanyDTOMapper;
-import com.excilys.formation.cdb.dto.mapper.ComputerDTOMapper;
-import com.excilys.formation.cdb.model.Company;
-import com.excilys.formation.cdb.model.Computer;
-import com.excilys.formation.cdb.service.CompanyService;
-import com.excilys.formation.cdb.service.ComputerService;
-import com.excilys.formation.cdb.validator.ComputerValidator;
 
 @Controller
 @RequestMapping("/editComputer")

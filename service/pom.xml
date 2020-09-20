@@ -4,18 +4,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>cdbMulti</artifactId>
-		<groupId>com.excilys</groupId>
+		<artifactId>computer-database</artifactId>
+		<groupId>com.excilys.cdb</groupId>
 		<version>${project.version}</version>
 	</parent>
 
-	<groupId>com.excilys.service</groupId>
+	<groupId>com.excilys.cdb</groupId>
 	<artifactId>service</artifactId>
+	<version> ${module-service.version} </version>
 	<packaging>jar</packaging>
 
-	<name>service</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,10 +23,15 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.excilys.persistence</groupId>
+			<groupId>com.excilys.cdb</groupId>
 			<artifactId>persistence</artifactId>
-			<version>${project.version}</version>
+			<version>${module-persistence.version}</version>
 		</dependency>
+		<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+			</dependency>
 	</dependencies>
 
 </project>
