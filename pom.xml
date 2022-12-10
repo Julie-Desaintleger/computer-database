@@ -21,7 +21,7 @@
 		<taglibs-standard-impl.version>1.2.5</taglibs-standard-impl.version>
 		<jstl-impl.version>1.2</jstl-impl.version>
 		<hikari.version>2.6.3</hikari.version>
-		<spring.version>5.2.7.RELEASE</spring.version>
+		<spring.version>6.0.0</spring.version>
 	</properties>
 
 	<dependencies>
